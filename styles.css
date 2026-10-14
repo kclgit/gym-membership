@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f9fafb;
+    color: #111827;
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- Layout --- */
+.container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+main {
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+/* --- Navigation --- */
+nav {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #111827;
+}
+
+.nav-links {
+    display: flex;
+    gap: 32px;
+}
+
+.nav-links a {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    padding: 8px 12px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #111827;
+}
+
+.nav-links a.active {
+    color: #111827;
+    font-weight: 700;
+    border-bottom: 2px solid #111827;
+    padding-bottom: 6px;
+}
+
+/* --- Common Card Styles --- */
+.card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* --- Grid Layout --- */
+.top-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* --- Stat Cards --- */
+.stat-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stat-value span {
+    font-size: 18px;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.trend-up {
+    color: #16a34a;
+    font-weight: 500;
+}
+
+.trend-text {
+    color: #9ca3af;
+    margin-left: 8px;
+}
+
