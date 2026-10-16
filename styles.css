@@ -28,6 +28,7 @@ main {
     padding-bottom: 32px;
 }
 
+
 /* --- Navigation --- */
 nav {
     background-color: #ffffff;
@@ -266,6 +267,98 @@ nav {
     font-weight: 500;
     color: #6b7280;
 }
+
+/* --- Weight Trend Chart --- */
+.chart-card {
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.chart-select-wrapper {
+    position: relative;
+}
+
+.chart-select {
+    appearance: none;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 32px 8px 12px;
+    font-size: 14px;
+    color: #111827;
+    cursor: pointer;
+    outline: none;
+}
+
+.chart-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6b7280;
+    font-size: 10px;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 192px;
+    padding: 0 8px;
+    gap: 5px;
+}
+
+.chart-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.chart-bar {
+    width: 100%;
+    background-color: #f3f4f6;
+    border-radius: 8px 8px 0 0;
+    transition: background-color 0.2s;
+}
+
+.chart-bar.active {
+    background-color: #93c5fd;
+}
+
+.chart-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.chart-label.active {
+    color: #111827;
+    font-weight: 700;
+}
+
 
 /* --- Responsive Media Queries --- */
 @media (min-width: 768px) {
