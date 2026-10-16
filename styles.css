@@ -74,6 +74,7 @@ nav {
 
 /* --- Common Card Styles --- */
 .card {
+    margin-top: 15px;
     background-color: #ffffff;
     border-radius: 16px;
     border: 1px solid #f3f4f6;
@@ -137,4 +138,143 @@ nav {
     color: #9ca3af;
     margin-left: 8px;
 }
+
+/* --- Calories Card Specifics --- */
+.calories-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calories-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.progress-ring-container {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.progress-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    fill: none;
+    stroke-width: 3;
+}
+
+.progress-ring .bg {
+    stroke: #e5e7eb;
+}
+
+.progress-ring .progress {
+    stroke: #3b82f6;
+    stroke-dasharray: 40, 100;
+    stroke-linecap: round;
+}
+
+.progress-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+}
+
+/* --- Streak Card --- */
+.streak-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.streak-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.streak-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+}
+
+.streak-icon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.streak-days {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.streak-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-right: 16px;
+    white-space: nowrap;
+}
+
+.days-grid {
+    display: flex;
+    gap: 12px;
+}
+
+.day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.day-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.day-circle.done {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.day-circle.missed {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+}
+
+.day-name {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* --- Responsive Media Queries --- */
+@media (min-width: 768px) {
+    .top-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .routines-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 
