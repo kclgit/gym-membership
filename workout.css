@@ -1,4 +1,3 @@
-
 :root {
   --primary: #111;
   --text-dark: #1a1a1a;
@@ -443,6 +442,34 @@ body {
   background-color: var(--primary);
   color: white;
 }
+
+#filter-all:checked ~ .workouts-container .filter-bar label[for="filter-all"],
+#filter-strength:checked ~ .workouts-container .filter-bar label[for="filter-strength"],
+#filter-cardio:checked ~ .workouts-container .filter-bar label[for="filter-cardio"],
+#filter-yoga:checked ~ .workouts-container .filter-bar label[for="filter-yoga"],
+#filter-hiit:checked ~ .workouts-container .filter-bar label[for="filter-hiit"] {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+
+#filter-strength:checked ~ .workouts-container .workout-card:not([data-category="strength"]) {
+  display: none;
+}
+
+#filter-cardio:checked ~ .workouts-container .workout-card:not([data-category="cardio"]) {
+  display: none;
+}
+
+#filter-yoga:checked ~ .workouts-container .workout-card:not([data-category="yoga"]) {
+  display: none;
+}
+
+#filter-hiit:checked ~ .workouts-container .workout-card:not([data-category="hiit"]) {
+  display: none;
+}
+
 
 
 @media (max-width: 600px) {
