@@ -13,10 +13,10 @@
         <div class="container nav-inner">
             <div class="logo">GYMAPP</div>
             <div class="nav-links">
-                <a href="#">Home</a>
-                <a href="#">Membership</a>
-                <a href="#" class="active">Progress</a>
-                <a href="#">Workouts</a>
+                <a href="index.html">Home</a>
+                <a href="membership.html">Membership</a>
+                <a href="gymapp.html" class="active">Progress</a>
+                <a href="workout.html">Workouts</a>
             </div>
         </div>
     </nav>
@@ -30,7 +30,7 @@
             <!-- Left Column Stats -->
             <div class="left-col">
                 
-                <!-- Stat 1: Total Workout Done -->
+                <!-- Workout Done -->
                 <div class="card stat-card">
                     <div class="stat-label">Total Workout Done</div>
                     <div class="stat-value">150 Workouts</div>
@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                    <!-- Stat 2: Calories Burned -->
+                <!-- Calories Burned -->
                 <div class="card stat-card calories-card">
                     <div class="calories-info">
                         <div class="stat-label">Calories Burned</div>
@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <!-- Right Column: Current Streak -->
+            <!-- Streak Card -->
             <div class="card streak-card">
                 <div class="streak-header">
                     <div>
@@ -108,6 +108,46 @@
                 </div>
             </div>
         </div>
+
+          <!-- Weight Trend Chart -->
+        <div class="card chart-card">
+            <div class="chart-header">
+                <h2 class="chart-title">Weight Trend</h2>
+                <div class="chart-select-wrapper">
+                    <select class="chart-select">
+                        <option>Last 30 Days</option>
+                        <option>Last 3 Months</option>
+                        <option>Last Year</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                </div>
+            </div>
+            <div class="chart-bars">
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 40%;"></div>
+                    <span class="chart-label">Week 1</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 45%;"></div>
+                    <span class="chart-label">Week 2</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 55%;"></div>
+                    <span class="chart-label">Week 3</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 65%;"></div>
+                    <span class="chart-label">Week 4</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar active" style="height: 85%;"></div>
+                    <span class="chart-label active">Now</span>
+                </div>
+            </div>
+        </div>
+
+
+        
 
 </body>
 </html>
