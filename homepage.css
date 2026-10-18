@@ -19,7 +19,7 @@ img {
 
 /* NAVIGATION BAR SECTION */
 header {
-    background-color: white;
+    background-color: black;
     position: fixed;
     top: 0;
     z-index: 1030;
@@ -38,12 +38,13 @@ header {
 }
 
 #navbar-title {
+    color: white;
     font-weight: bold;
 }
 
 .navbar a {
     text-decoration: none;
-    color: grey;
+    color: white;
 }
 
 .navbar-list {
@@ -78,7 +79,7 @@ header {
 }
 
 .navbar a:hover {
-    color: black;
+    color: grey;
 }
 
 /* BODY SECTION */
@@ -93,16 +94,29 @@ header {
     width: 100%;
     background-color: grey;
     overflow: hidden;
+    background-image: url(Images/GymImage.jpg)
 }
 
 #home h1 {
-    color: black;
-    font-weight: bold;
-    padding: 40px;
+    color: white;
+    font-size: clamp(28px, 2.917vw, 56px);
+    font-weight: bolder;
+    padding: 25px;
+    animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
+     transform-origin: bottom;
 }
 
 #home p {
-    color: black;
+    font-size: clamp(18px, 1.458vw, 36px);
+    color: white;
+    animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
+     transform-origin: bottom;
+}
+
+@media (max-width: 768px) {
+    #home {
+        background-attachment: scroll;
+    }
 }
 
 #home::before {
@@ -117,6 +131,28 @@ header {
   z-index: 2;
 }
 
+#home::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 30%;
+  background: linear-gradient(to bottom, rgba(107, 107, 107, 0), rgb(31, 31, 31));
+  pointer-events: none;
+}
+
+@keyframes fade-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
+}
+
 /* CHECK-IN SECTION */
 #check-in {
     display: flex;
@@ -128,6 +164,14 @@ header {
     height: 700px;
     width: 100%;
     overflow: hidden;
+    background-color: black;
+}
+#check-in h1 {
+    color: white;
+}
+
+#check-in p {
+    color: white;
 }
 
 #check-in img {
@@ -139,27 +183,79 @@ header {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    background-color: lightgray;
     padding: 20px;
     width: 500px;
 }
 
-/* MEMBERSHIP SECTION */
-#membership {
+#check-in::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.505), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  z-index: 2;
+}
+
+#check-in::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 30%;
+  background: linear-gradient(to bottom, rgba(40, 40, 40, 0), rgb(0, 0, 0));
+  pointer-events: none;
+}
+
+/* MEMBERSHIP SECTION  */
+#membership-container {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: column;
     justify-content: center;
     text-align: center;
     align-items: center;
-    height: 700px;
+    height: 500px;
     width: 100%;
-    background-color: grey;
+    background-color: black;
     overflow: hidden;
+    gap: 20px;
+    flex-direction: row-reverse;
+}
+
+#membership-img {
+    display: flex;
+    flex: 1;
+}
+
+#membership-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#membership-text {
+    flex: 1;
+    margin: 30px;
+}
+
+#membership-container h1 {
+    color: white;
+    font-size: clamp(22px, 2.917vw, 56px);
+    font-weight: bold;
+    padding: 10px;
+}
+
+#membership-container p {
+    color: white;
+    font-size: clamp(18px, 1.458vw, 36px);
+    padding: 10px
 }
 
 .button {
-    background-color: black;
+    background-color: rgb(76, 76, 76);
     border-radius: 10px;
     color: white;
     padding: 10px;
@@ -171,4 +267,10 @@ header {
 .button:hover {
     background-color: rgb(75, 75, 75);
     cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    #membership-container {
+        background-attachment: scroll;
+    }
 }
