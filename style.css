@@ -217,8 +217,6 @@ header {
     height: 500px;
     width: 100%;
     background-color: black;
-    overflow: hidden;
-    gap: 20px;
     flex-direction: row-reverse;
 }
 
@@ -227,17 +225,22 @@ header {
     flex: 1;
     justify-content: center;
     align-items: center;
+    margin: 10px;
 }
 
 #membership-img img {
     width: 100%;
-    height: auto;
+    max-height: 450px;
     display: block;
     max-width: fit-content;
 }
 
 #membership-text {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     margin: 30px;
 }
 
@@ -246,32 +249,38 @@ header {
     font-size: clamp(22px, 2.917vw, 56px);
     font-weight: bold;
     padding: 10px;
+    white-space: nowrap;
+    text-align: center;
 }
 
 #membership-container p {
     color: white;
     font-size: clamp(16px, 1.458vw, 36px);
-    padding: 10px
+    text-align: center;
 }
 
 .button a {
     text-decoration: none;
-    color: white;
+    color: black;
+    font-weight: bold;
+    font-size: clamp(14px, 1.2vw, 20px);
 }
 
 .button {
-    background-color: rgb(76, 76, 76);
-    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 50px;
     padding: 10px;
-    text-align:center;
-    font-size: clamp(9px, 0.9vw, 24px);
-    font-weight: bold;
-    overflow: hidden;
-
+    margin: 20px auto 0;
+    background-color: white;
+    border-radius: 10px;
+    white-space: nowrap;
 }
 
 .button:hover {
-    background-color: rgb(75, 75, 75);
+    background-color: rgb(118, 118, 118);
     cursor: pointer;
 }
 /*

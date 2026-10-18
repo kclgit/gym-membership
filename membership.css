@@ -4,7 +4,7 @@ html, body {
     max-width: 100%;
     overflow-x: hidden;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: black;
+    background-color: black; 
 }
 
 *, *::before, *::after {
@@ -25,7 +25,6 @@ header {
     top: 0;
     z-index: 1030;
     width: 100%;
-    box-shadow: 2px 2px 8px rgb(0, 0,0, 0.3);
 }
 
 .navbar {
@@ -86,13 +85,47 @@ header {
 /* BODY SECTION */
 #membership-section {
     color: white;
+    height: 100%;
+    background-image: url(Images/BackgroundImage2.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    gap: 10px;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.505), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  z-index: 2;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, rgba(107, 107, 107, 0), rgb(31, 31, 31));
+  pointer-events: none;
 }
 
 #membership-section h1 {
-    font-size: clamp(28px, 2.917vw, 56px);
+    font-size: clamp(32px, 2.917vw, 72px);
     font-weight: bolder;
     margin-top: 80px;
-    padding: 30px;
+    padding: 50px;
 }
 
 #main-membership {
@@ -100,27 +133,28 @@ header {
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
-    gap: 50px;
+    gap: 40px;
 }
 
 .box {
-    width: 300px;
+    width: 400px;
     min-width: 300px;
     flex-shrink: 0;
     background-color: black;
     border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     padding: 20px;
     margin: 20px;
-    box-shadow: 0px 0px 10px 8px rgb(148, 148, 148);
+    background-color: rgba(0, 0, 0, 0.2); 
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
 }
 
 .subscribe-btn {
-    background-color: grey;
+    background-color: white;
     border-radius: 10px;
-    color: white;
+    color: black;
     padding: 10px;
     text-align:center;
     font-weight: bold;
@@ -129,5 +163,6 @@ header {
 
 .subscribe-btn:hover {
     background-color: rgb(75, 75, 75);
+    box-shadow: 0px 0px 10px 5px rgb(148, 148, 148);
     cursor: pointer;
 }
