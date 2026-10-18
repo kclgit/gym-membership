@@ -172,6 +172,7 @@ header {
 
 #check-in p {
     color: white;
+    padding-bottom: 10px;
 }
 
 #check-in img {
@@ -179,12 +180,8 @@ header {
     width: 300px;
 }
 
-#qr-border {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 20px;
-    width: 500px;
+#check-in-border {
+    box-shadow: 0px 0px 10px 5px rgb(148, 148, 148);
 }
 
 #check-in::before {
@@ -228,12 +225,15 @@ header {
 #membership-img {
     display: flex;
     flex: 1;
+    justify-content: center;
+    align-items: center;
 }
 
 #membership-img img {
     width: 100%;
     height: auto;
     display: block;
+    max-width: fit-content;
 }
 
 #membership-text {
@@ -250,27 +250,34 @@ header {
 
 #membership-container p {
     color: white;
-    font-size: clamp(18px, 1.458vw, 36px);
+    font-size: clamp(16px, 1.458vw, 36px);
     padding: 10px
+}
+
+.button a {
+    text-decoration: none;
+    color: white;
 }
 
 .button {
     background-color: rgb(76, 76, 76);
     border-radius: 10px;
-    color: white;
     padding: 10px;
     text-align:center;
+    font-size: clamp(9px, 0.9vw, 24px);
     font-weight: bold;
     overflow: hidden;
+
 }
 
 .button:hover {
     background-color: rgb(75, 75, 75);
     cursor: pointer;
 }
-
+/*
 @media (max-width: 768px) {
     #membership-container {
-        background-attachment: scroll;
+        background-image: scroll;
     }
 }
+    */
