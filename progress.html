@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GYMAPP - Progress Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="progress.css">
 </head>
 <body>
     <!-- Nav Bar Section -->
@@ -31,7 +31,7 @@
             <!-- Left Column Stats -->
             <div class="left-col">
                 
-                <!-- Stat 1: Total Workout Done -->
+                <!-- Workout Done -->
                 <div class="card stat-card">
                     <div class="stat-label">Total Workout Done</div>
                     <div class="stat-value">150 Workouts</div>
@@ -42,5 +42,113 @@
                         <span class="trend-text">vs last month</span>
                     </div>
                 </div>
+
+                <!-- Calories Burned -->
+                <div class="card stat-card calories-card">
+                    <div class="calories-info">
+                        <div class="stat-label">Calories Burned</div>
+                        <div class="stat-value">300/750 <span>Cal</span></div>
+                        <div class="stat-trend">
+                            <span class="trend-up">
+                                ⬆ 15%
+                            </span>
+                            <span class="trend-text">vs last month</span>
+                        </div>
+                    </div>
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" viewBox="0 0 36 36">
+                            <circle class="bg" cx="18" cy="18" r="15.9155"></circle>
+                            <circle class="progress" cx="18" cy="18" r="15.9155"></circle>
+                        </svg>
+                        <div class="progress-icon">🔥</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streak Card -->
+            <div class="card streak-card">
+                <div class="streak-header">
+                    <div>
+                        <div class="stat-label">Current Streak</div>
+                        <div class="streak-value">23 Days</div>
+                    </div>
+                    <span class="streak-icon">🔥</span>
+                </div>
+                <div class="streak-days">
+                    <span class="streak-label">This week</span>
+                    <div class="days-grid">
+                        <div class="day-item">
+                            <div class="day-circle done">✓</div>
+                            <span class="day-name">Mon</span>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-circle done">✓</div>
+                            <span class="day-name">Tue</span>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-circle done">✓</div>
+                            <span class="day-name">Wed</span>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-circle missed">✕</div>
+                            <span class="day-name">Thu</span>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-circle missed">✕</div>
+                            <span class="day-name">Fri</span>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-circle missed">✕</div>
+                            <span class="day-name">Sat</span>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-circle done">✓</div>
+                            <span class="day-name">Sun</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <!-- Weight Trend Chart -->
+        <div class="card chart-card">
+            <div class="chart-header">
+                <h2 class="chart-title">Weight Trend</h2>
+                <div class="chart-select-wrapper">
+                    <select class="chart-select">
+                        <option>Last 30 Days</option>
+                        <option>Last 3 Months</option>
+                        <option>Last Year</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                </div>
+            </div>
+            <div class="chart-bars">
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 40%;"></div>
+                    <span class="chart-label">Week 1</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 45%;"></div>
+                    <span class="chart-label">Week 2</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 55%;"></div>
+                    <span class="chart-label">Week 3</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 65%;"></div>
+                    <span class="chart-label">Week 4</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar active" style="height: 85%;"></div>
+                    <span class="chart-label active">Now</span>
+                </div>
+            </div>
+        </div>
+
+
+        
+
 </body>
 </html>

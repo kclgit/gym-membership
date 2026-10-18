@@ -1,0 +1,404 @@
+html, body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/*
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+*/
+
+/* NAVIGATION BAR SECTION */
+header {
+    background-color: black;
+    position: fixed;
+    top: 0;
+    z-index: 1030;
+    width: 100%;
+    box-shadow: 2px 2px 8px rgb(0, 0,0, 0.3);
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 0 clamp(8px, 2vw, 30px);
+    box-sizing: border-box;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+#navbar-title {
+    color: white;
+    font-weight: bold;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: clamp(6px, 3vw, 100px); /* adjust */
+    flex: 1;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+}
+
+.navbar img {
+    height: auto;
+    width: clamp(20px, 4vw, 40px);
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 10px;
+    border-radius: 50px;
+}
+
+.navbar-item {
+    list-style: none;
+    font-size: clamp(10px, 1.4vw, 12px); /* adjust */
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.navbar a:hover {
+    color: grey;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- Layout --- */
+.container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 24px;
+    margin-top: 100px;
+}
+
+main {
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+
+/* --- Common Card Styles --- */
+.card {
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* --- Grid Layout --- */
+.top-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* --- Stat Cards --- */
+.stat-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stat-value span {
+    font-size: 18px;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.trend-up {
+    color: #16a34a;
+    font-weight: 500;
+}
+
+.trend-text {
+    color: #9ca3af;
+    margin-left: 8px;
+}
+
+/* --- Calories Card Specifics --- */
+.calories-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calories-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.progress-ring-container {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.progress-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    fill: none;
+    stroke-width: 3;
+}
+
+.progress-ring .bg {
+    stroke: #e5e7eb;
+}
+
+.progress-ring .progress {
+    stroke: #3b82f6;
+    stroke-dasharray: 40, 100;
+    stroke-linecap: round;
+}
+
+.progress-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+}
+
+/* --- Streak Card --- */
+.streak-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.streak-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.streak-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+}
+
+.streak-icon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.streak-days {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.streak-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-right: 16px;
+    white-space: nowrap;
+}
+
+.days-grid {
+    display: flex;
+    gap: 12px;
+}
+
+.day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.day-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.day-circle.done {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.day-circle.missed {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+}
+
+.day-name {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* --- Weight Trend Chart --- */
+.chart-card {
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.chart-select-wrapper {
+    position: relative;
+}
+
+.chart-select {
+    appearance: none;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 32px 8px 12px;
+    font-size: 14px;
+    color: #111827;
+    cursor: pointer;
+    outline: none;
+}
+
+.chart-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6b7280;
+    font-size: 10px;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 192px;
+    padding: 0 8px;
+    gap: 5px;
+}
+
+.chart-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.chart-bar {
+    width: 100%;
+    background-color: #f3f4f6;
+    border-radius: 8px 8px 0 0;
+    transition: background-color 0.2s;
+}
+
+.chart-bar.active {
+    background-color: #93c5fd;
+}
+
+.chart-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.chart-label.active {
+    color: #111827;
+    font-weight: 700;
+}
+
+
+/* --- Responsive Media Queries --- */
+@media (min-width: 768px) {
+    .top-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .routines-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+
