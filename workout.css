@@ -12,12 +12,6 @@
   --danger: #d63031;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-main);
@@ -26,44 +20,89 @@ body {
 }
 
 
+html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* NAVIGATION BAR SECTION */
+header {
+    background-color: black;
+    position: fixed;
+    top: 0;
+    z-index: 1030;
+    width: 100%;
+    box-shadow: 2px 2px 8px rgb(0, 0,0, 0.3);
+}
+
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 clamp(8px, 2vw, 30px);
+    box-sizing: border-box;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
-.logo {
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 1px;
+#navbar-title {
+    color: white;
+    font-weight: bold;
 }
 
-.nav-links {
-  display: flex;
-  gap: 40px;
-  list-style: none;
+.navbar a {
+    text-decoration: none;
+    color: white;
 }
 
-.nav-links a {
-  text-decoration: none;
-  color: var(--text-gray);
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s ease;
+.navbar-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: clamp(6px, 3vw, 100px); /* adjust */
+    flex: 1;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
 }
 
-.nav-links a.active,
-.nav-links a:hover {
-  color: var(--primary);
-  font-weight: 700;
+.navbar img {
+    height: auto;
+    width: clamp(20px, 4vw, 40px);
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 10px;
+    border-radius: 50px;
 }
 
+.navbar-item {
+    list-style: none;
+    font-size: clamp(10px, 1.4vw, 12px); /* adjust */
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.navbar a:hover {
+    color: grey;
+}
 
 .workouts-container {
   padding: 40px;
@@ -442,34 +481,6 @@ body {
   background-color: var(--primary);
   color: white;
 }
-
-#filter-all:checked ~ .workouts-container .filter-bar label[for="filter-all"],
-#filter-strength:checked ~ .workouts-container .filter-bar label[for="filter-strength"],
-#filter-cardio:checked ~ .workouts-container .filter-bar label[for="filter-cardio"],
-#filter-yoga:checked ~ .workouts-container .filter-bar label[for="filter-yoga"],
-#filter-hiit:checked ~ .workouts-container .filter-bar label[for="filter-hiit"] {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-
-#filter-strength:checked ~ .workouts-container .workout-card:not([data-category="strength"]) {
-  display: none;
-}
-
-#filter-cardio:checked ~ .workouts-container .workout-card:not([data-category="cardio"]) {
-  display: none;
-}
-
-#filter-yoga:checked ~ .workouts-container .workout-card:not([data-category="yoga"]) {
-  display: none;
-}
-
-#filter-hiit:checked ~ .workouts-container .workout-card:not([data-category="hiit"]) {
-  display: none;
-}
-
 
 
 @media (max-width: 600px) {
