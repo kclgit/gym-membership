@@ -293,6 +293,9 @@ header {
   height: 44px;
   background: #ffeaea;
   color: var(--danger);
+  border: none;
+  padding: 0;
+  font-family: inherit;
   border-radius: 10px;
   font-size: 20px;
   font-weight: bold;
