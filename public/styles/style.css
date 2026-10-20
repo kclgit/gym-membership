@@ -93,7 +93,7 @@ header {
     width: 100%;
     background-color: grey;
     overflow: hidden;
-    background-image: url(/public/Images/GymImage.jpg)
+    background-image: url(/Images/GymImage.jpg)
 }
 
 #home h1 {

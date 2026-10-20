@@ -22,20 +22,18 @@ body {
 html, body {
     margin: 0;
     padding: 0;
-    max-width: 100%;
-    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
     font-family: Arial, Helvetica, sans-serif;
-    height: 100%;
-    background-image: url(/public/Images/WorkoutBackground.jpg);
+    background-color: var(--bg-main);
+    background-image: url("/Images/WorkoutBackground.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
-    min-height: 100vh;
-    gap: 10px;
-    margin: 0;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 *, *::before, *::after {
@@ -517,3 +515,66 @@ header {
         transform: translateY(0px) scale(1);
     }
 }
+
+.workout-session-panel {
+    margin: 24px auto;
+    padding: 24px;
+    width: min(90%, 700px);
+    box-sizing: border-box;
+    text-align: center;
+    background: rgba(20, 20, 20, 0.95);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    scroll-margin-top: 20px;
+}
+
+.workout-session-panel[hidden],
+#session-summary[hidden] {
+    display: none;
+}
+
+.session-timer {
+    margin: 20px 0;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}
+
+.session-controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.session-controls button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.session-controls button:disabled,
+.start-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#pause-resume-btn {
+    background: #f0b429;
+    color: #111;
+}
+
+#finish-workout-btn {
+    background: #d94343;
+    color: white;
+}
+
+#session-summary {
+    margin-top: 20px;
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+

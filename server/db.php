@@ -1,17 +1,14 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "gymtrack_user";
+$password = "GymTrack_DB_2026!";
 $dbname = "small_gym_db";
 
-    
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-
 if ($conn->connect_error) {
-    error_log("Connection failed: " . $conn->connect_error);
-} else {
-    echo "Database connected successfully via MySQLi!";
+    die("Connection failed: " . $conn->connect_error);
 }
 
+$conn->set_charset("utf8mb4");
 ?>
