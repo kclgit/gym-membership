@@ -26,7 +26,7 @@ html, body {
     overflow-x: hidden;
     font-family: Arial, Helvetica, sans-serif;
     height: 100%;
-    background-image: url(/public/Images/WorkoutBackground.jpg);
+    background-image: url('../Images/WorkoutBackground.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
@@ -516,4 +516,246 @@ header {
         opacity: 1;
         transform: translateY(0px) scale(1);
     }
+}
+
+.details-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1000;
+}
+
+.details-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.details-modal {
+  background: white;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 20px;
+  overflow: hidden;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.details-modal-overlay.active .details-modal {
+  transform: translateY(0);
+}
+
+.details-modal .modal-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.details-modal .modal-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.details-modal .close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-gray);
+  line-height: 1;
+}
+
+.details-modal .modal-body {
+  padding: 24px;
+}
+
+.details-modal .modal-body p {
+  color: var(--text-gray);
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.exercise-list-display {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.exercise-list-display li {
+  padding: 14px 16px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--text-dark);
+  border-left: 4px solid var(--primary);
+  display: flex;
+  align-items: center;
+}
+
+.exercise-list-display li::before {
+  content: '💪';
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.details-modal .modal-footer {
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #fafafa;
+}
+
+.details-modal .btn-cancel {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-gray);
+}
+
+.details-modal .btn-save {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.details-modal .btn-cancel:hover { background: #f0f0f0; }
+.details-modal .btn-save:hover { opacity: 0.85; }
+
+#success-toggle {
+  display: none;
+}
+
+/* The dark background */
+.success-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 2000; /* Higher than the details modal */
+}
+
+/* Show when checkbox is checked */
+#success-toggle:checked ~ .success-modal-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* The white box */
+.success-modal {
+  background: white;
+  width: 100%;
+  max-width: 350px;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+/* Pop effect when opened */
+#success-toggle:checked ~ .success-modal-overlay .success-modal {
+  transform: scale(1);
+}
+
+.success-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: bounce 1s infinite alternate;
+}
+
+.success-modal h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.success-modal p {
+  font-size: 14px;
+  color: var(--text-gray);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.success-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  text-align: center;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.success-btn:hover {
+  opacity: 0.9;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+
+.filter-input {
+  display: none;
+}
+
+/* Highlight the active filter button */
+#filter-all:checked ~ .workouts-container .filter-bar label[for="filter-all"],
+#filter-strength:checked ~ .workouts-container .filter-bar label[for="filter-strength"],
+#filter-cardio:checked ~ .workouts-container .filter-bar label[for="filter-cardio"],
+#filter-yoga:checked ~ .workouts-container .filter-bar label[for="filter-yoga"],
+#filter-hiit:checked ~ .workouts-container .filter-bar label[for="filter-hiit"] {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Hide cards that don't match the selected filter */
+#filter-strength:checked ~ .workouts-container .workout-card:not([data-category="strength"]) {
+  display: none;
+}
+#filter-cardio:checked ~ .workouts-container .workout-card:not([data-category="cardio"]) {
+  display: none;
+}
+#filter-yoga:checked ~ .workouts-container .workout-card:not([data-category="yoga"]) {
+  display: none;
+}
+#filter-hiit:checked ~ .workouts-container .workout-card:not([data-category="hiit"]) {
+  display: none;
 }
