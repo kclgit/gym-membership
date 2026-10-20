@@ -19,10 +19,39 @@ body {
   line-height: 1.5;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    height: 100%;
+    background-image: url(/public/Images/WorkoutBackground.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    gap: 10px;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
 
 /* NAVIGATION BAR SECTION */
 header {
-    background-color: white;
+    background-color: black;
     position: fixed;
     top: 0;
     z-index: 1030;
@@ -41,12 +70,13 @@ header {
 }
 
 #navbar-title {
+    color: white;
     font-weight: bold;
 }
 
 .navbar a {
     text-decoration: none;
-    color: grey;
+    color: white;
 }
 
 .navbar-list {
@@ -81,15 +111,15 @@ header {
 }
 
 .navbar a:hover {
-    color: black;
+    color: grey;
 }
-
-
 
 .workouts-container {
   padding: 40px;
   max-width: 1200px;
   margin: 0 auto;
+  animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
+     transform-origin: bottom;
 }
 
 .page-header {
@@ -102,12 +132,13 @@ header {
 }
 
 .page-header h1 {
+  color: white;
   font-size: 28px;
   margin-bottom: 8px;
 }
 
 .page-header p {
-  color: var(--text-gray);
+  color: white;
 }
 
 
@@ -393,6 +424,9 @@ header {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: rgb(255, 255, 255); 
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
 }
 
 .workout-card:hover {
@@ -471,4 +505,15 @@ header {
   .workouts-container { padding: 20px; }
   .form-row { grid-template-columns: 1fr; }
   .modal-body { padding: 20px; }
+}
+
+@keyframes fade-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
 }
