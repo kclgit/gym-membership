@@ -3,28 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GymApp - Custom Workout</title>
-<link rel="stylesheet" href="/public/styles/workout.css">
+<title>GymTrack - Workouts</title>
+<link rel="stylesheet" href="styles/workout.css">
 </head>
 <body>
 
-  
   <input type="checkbox" id="modal-toggle">
+  <input type="checkbox" id="success-toggle">
+
+  <input type="radio" name="filter" id="filter-all" class="filter-input" checked>
+  <input type="radio" name="filter" id="filter-strength" class="filter-input">
+  <input type="radio" name="filter" id="filter-cardio" class="filter-input">
+  <input type="radio" name="filter" id="filter-yoga" class="filter-input">
+  <input type="radio" name="filter" id="filter-hiit" class="filter-input">
 
   
-  <!-- Nav Bar Section -->
-   <header>
-        <nav class="navbar">
-            <p id="navbar-title">GymTrack</p>
-            <ul class="navbar-list">
-                <li class="navbar-item"><a href="index.html">Home</a></li>
-                <li class="navbar-item"><a href="membership.html">Membership</a></li>
-                <li class="navbar-item"><a href="progress.html">Progress</a></li>
-                <li class="navbar-item"><a href="workout.html">Workouts</a></li>
-            </ul>
-            <img src="Images/UserProfile.jpeg" alt="user-profile">
-        </nav>
-    </header>
+  <header>
+      <nav class="navbar">
+          <p id="navbar-title">GymTrack</p>
+          <ul class="navbar-list">
+              <li class="navbar-item"><a href="index.html">Home</a></li>
+              <li class="navbar-item"><a href="membership.html">Membership</a></li>
+              <li class="navbar-item"><a href="progress.html">Progress</a></li>
+              <li class="navbar-item"><a href="workout.html">Workouts</a></li>
+          </ul>
+          <img src="Images/UserProfile.jpeg" alt="user-profile">
+      </nav>
+  </header>
 
   
   <main class="workouts-container">
@@ -38,16 +43,17 @@
     </div>
 
     <div class="filter-bar">
-      <button class="filter-btn active">All</button>
-      <button class="filter-btn">Strength</button>
-      <button class="filter-btn">Cardio</button>
-      <button class="filter-btn">Yoga</button>
-      <button class="filter-btn">HIIT</button>
+      <label for="filter-all" class="filter-btn">All</label>
+      <label for="filter-strength" class="filter-btn">Strength</label>
+      <label for="filter-cardio" class="filter-btn">Cardio</label>
+      <label for="filter-yoga" class="filter-btn">Yoga</label>
+      <label for="filter-hiit" class="filter-btn">HIIT</label>
     </div>
 
     <div class="workout-grid">
 
-      <div class="workout-card">
+      
+      <div class="workout-card" data-category="strength">
         <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop');">
           <span class="tag strength">Strength</span>
         </div>
@@ -61,7 +67,8 @@
         </div>
       </div>
 
-      <div class="workout-card">
+      
+      <div class="workout-card" data-category="hiit">
         <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1470&auto=format&fit=crop');">
           <span class="tag hiit">HIIT</span>
         </div>
@@ -75,7 +82,7 @@
         </div>
       </div>
 
-      <div class="workout-card">
+      <div class="workout-card" data-category="yoga">
         <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1470&auto=format&fit=crop');">
           <span class="tag yoga">Yoga</span>
         </div>
@@ -89,7 +96,8 @@
         </div>
       </div>
 
-      <div class="workout-card">
+  
+      <div class="workout-card" data-category="cardio">
         <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1538805060514-97d9cc17730c?q=80&w=1374&auto=format&fit=crop');">
           <span class="tag cardio">Cardio</span>
         </div>
@@ -109,19 +117,15 @@
   
   <div class="modal-overlay">
     <div class="modal">
-      
       <div class="modal-header">
         <h2>Create Custom Workout</h2>
         <label for="modal-toggle" class="close-btn">&times;</label>
       </div>
-
       <div class="modal-body">
-        
         <div class="form-group">
           <label for="workoutName">Workout Name</label>
           <input type="text" id="workoutName" placeholder="e.g., Leg Day Destroyer">
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label for="workoutType">Type</label>
@@ -137,37 +141,67 @@
             <input type="number" id="workoutDuration" placeholder="45" min="1">
           </div>
         </div>
-
-        
         <div class="form-group">
           <label>Exercises</label>
           <div class="exercise-list">
-            
             <div class="exercise-item">
               <input type="text" placeholder="Exercise name (e.g., Squats)">
               <span class="remove-btn">&times;</span>
             </div>
-            
             <div class="exercise-item">
               <input type="text" placeholder="Exercise name (e.g., Lunges)">
               <span class="remove-btn">&times;</span>
             </div>
-
           </div>
-          
-          
           <button type="button" class="add-exercise-btn">+ Add Exercise</button>
         </div>
+      </div>
+      <div class="modal-footer">
+        <label for="modal-toggle" class="btn-cancel">Cancel</label>
+        <button type="button" class="btn-save" id="save-workout-btn">Save Workout</button>
+      </div>
+    </div>
+  </div>
 
+  
+  <div class="details-modal-overlay" id="details-modal">
+    <div class="details-modal">
+      
+      <div class="modal-header">
+        <h2 id="details-title">Workout Name</h2>
+        <button class="close-btn" id="close-details-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p>Complete the following exercises:</p>
+        <ul class="exercise-list-display" id="details-exercise-list">
+          <!-- Exercises injected by JS -->
+        </ul>
       </div>
 
       <div class="modal-footer">
-        <label for="modal-toggle" class="btn-cancel">Cancel</label>
-        <label for="modal-toggle" class="btn-save">Save Workout</label>
+        <button class="btn-cancel" id="cancel-details-btn">Cancel</button>
+        <button class="btn-save" id="start-timer-btn">⏱ Start Timer</button>
       </div>
 
     </div>
   </div>
 
+   <div class="success-modal-overlay">
+    <div class="success-modal">
+      <div class="success-icon">🎉</div>
+      <h2>Workout Started!</h2>
+      <p id="success-message">Get ready to crush your goals. Your timer is now running.</p>
+      
+      <!-- Clicking this label closes the popup -->
+      <label for="success-toggle" class="btn-save success-btn">Let's Go! 💪</label>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/modal.js"></script>
+  <script src="js/exercises.js"></script>
+  <script src="js/workout.js"></script>
+  
 </body>
 </html>
