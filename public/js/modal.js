@@ -46,3 +46,64 @@ document.addEventListener('keydown', (e) => {
     closeModal();
   }
 });
+
+const saveWorkoutBtnNew = document.getElementById('save-workout-btn');
+
+if (saveWorkoutBtnNew) {
+    saveWorkoutBtnNew.addEventListener('click', () => {
+        const nameInput = document.getElementById('workoutName').value;
+        const typeInput = document.getElementById('workoutType').value;
+        const durationInput = document.getElementById('workoutDuration').value || '30'; 
+        
+        // Grab the exercises the user typed in!
+        const exerciseInputs = document.querySelectorAll('.exercise-item input');
+        const customExercises = [];
+        exerciseInputs.forEach(input => {
+            if (input.value.trim() !== '') {
+                customExercises.push(input.value.trim());
+            }
+        });
+
+        if (nameInput.trim() === '') {
+            alert("Please enter a workout name!");
+            return; 
+        }
+
+        const workoutGrid = document.querySelector('.workout-grid');
+        const newCard = document.createElement('div');
+        newCard.className = 'workout-card';
+        newCard.setAttribute('data-category', typeInput); 
+        
+        // 🔥 THIS IS THE FIX: We save the exercises into the HTML card
+        newCard.setAttribute('data-exercises', JSON.stringify(customExercises));
+
+        let imgUrl = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop"; 
+        if(typeInput === 'yoga') imgUrl = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1470&auto=format&fit=crop";
+        if(typeInput === 'hiit') imgUrl = "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1470&auto=format&fit=crop";
+        if(typeInput === 'cardio') imgUrl = "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?q=80&w=1374&auto=format&fit=crop";
+
+        newCard.innerHTML = `
+            <div class="card-image" style="background-image: url('${imgUrl}');">
+              <span class="tag ${typeInput}">${typeInput}</span>
+            </div>
+            <div class="card-content">
+              <h3>${nameInput}</h3>
+              <div class="card-stats">
+                <span>⏱ ${durationInput} min</span>
+                <span>🔥 Custom</span>
+              </div>
+              <button class="start-btn">Start Workout</button>
+            </div>
+        `;
+
+        workoutGrid.prepend(newCard);
+
+        // Clear form
+        document.getElementById('workoutName').value = '';
+        document.getElementById('workoutDuration').value = '';
+        document.querySelectorAll('.exercise-item input').forEach(input => input.value = '');
+
+        // Close modal
+        document.getElementById('modal-toggle').checked = false;
+    });
+}
