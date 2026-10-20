@@ -13,4 +13,18 @@ function createExerciseRow() {
   `;
   return row;
 }
+// Add a new exercise row when "+ Add Exercise" is clicked
+document.querySelector('.add-exercise-btn').addEventListener('click', () => {
+  exerciseList.appendChild(createExerciseRow());
+});
+
+// Remove an exercise row when the "×" button is clicked
+exerciseList.addEventListener('click', (e) => {
+  if (e.target.classList.contains('remove-btn')) {
+    // Keep at least 1 exercise on the list
+    if (exerciseList.children.length > 1) {
+      e.target.closest('.exercise-item').remove();
+    }
+  }
+});
 
