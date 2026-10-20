@@ -405,6 +405,124 @@ header {
     font-weight: 700;
 }
 
+/* --- Popular Workout Routines --- */
+.routines-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.routines-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.view-all {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2563eb;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.view-all:hover {
+    color: #1e40af;
+}
+
+.routines-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.routine-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.routine-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.routine-image-wrapper {
+    position: relative;
+    height: 192px;
+    overflow: hidden;
+    background-color: #f3f4f6;
+}
+
+.routine-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.routine-card:hover .routine-image {
+    transform: scale(1.05);
+}
+
+.routine-content {
+    padding: 20px;
+}
+
+.routine-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+    transition: color 0.2s;
+}
+
+.routine-card:hover .routine-title {
+    color: #2563eb;
+}
+
+.routine-desc {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+
+.routine-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-icon {
+    font-size: 16px;
+    color: #9ca3af;
+}
+
+/* --- Responsive Media Queries --- */
+@media (min-width: 768px) {
+    .top-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .routines-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+
 
 /* --- Responsive Media Queries --- */
 @media (min-width: 768px) {
