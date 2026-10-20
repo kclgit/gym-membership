@@ -90,11 +90,11 @@ header {
     justify-content: center;
     text-align: center;
     align-items: center;
-    height: 900px;
+    height: 870px;
     width: 100%;
     background-color: grey;
     overflow: hidden;
-    background-image: url(public/Images/GymImage.jpg)
+    background-image: url(/public/Images/GymImage.jpg)
 }
 
 #home h1 {
