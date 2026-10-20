@@ -87,7 +87,7 @@ header {
 #membership-section {
     color: white;
     height: 100%;
-    background-image: url(/public/Images/BackgroundImage2.jpg);
+    background-image: url(../Images/BackgroundImage2.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
