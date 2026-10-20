@@ -1,10 +1,12 @@
 // Controls adding and deleting exercises in the custom workout modal
 
-// Get the container where exercise rows go and the "+ Add Exercise" button
 const exerciseList = document.querySelector('.exercise-list');
 const addExerciseBtn = document.querySelector('.add-exercise-btn');
 
-// Function to make a new exercise input row
+// Max number of exercise rows
+const MAX_EXERCISES = 10;
+
+// Create a new exercise input row
 function createExerciseRow() {
   const row = document.createElement('div');
   row.className = 'exercise-item';
@@ -15,7 +17,7 @@ function createExerciseRow() {
   return row;
 }
 
-// Read the entered exercises back out (trimmed, empty ones dropped)
+// Return the entered exercises, trimmed and non-empty
 function getExercises() {
   if (!exerciseList) return [];
   return Array.from(exerciseList.querySelectorAll('input[name="exercise"]'))
@@ -23,20 +25,49 @@ function getExercises() {
     .filter(Boolean);
 }
 
-// Guard: only wire up events when the modal exists on this page
-if (exerciseList && addExerciseBtn) {
-  // Add a new exercise row when "+ Add Exercise" is clicked
-  addExerciseBtn.addEventListener('click', () => {
-    exerciseList.appendChild(createExerciseRow());
+// Disable remove buttons at 1 row; disable add button at the cap
+function updateButtons() {
+  const count = exerciseList.children.length;
+
+  exerciseList.querySelectorAll('.remove-btn').forEach((btn) => {
+    btn.disabled = count <= 1;
   });
+
+  addExerciseBtn.disabled = count >= MAX_EXERCISES;
+}
+
+// Add a row and focus its input
+function addExerciseRow() {
+  if (exerciseList.children.length >= MAX_EXERCISES) return;
+
+  const row = createExerciseRow();
+  exerciseList.appendChild(row);
+  updateButtons();
+
+  const input = row.querySelector('input');
+  if (input) input.focus();
+}
+
+// Only wire up events if the modal is present
+if (exerciseList && addExerciseBtn) {
+  // Build the initial rows here (single source of truth)
+  exerciseList.innerHTML = '';
+  for (let i = 0; i < 2; i++) {
+    exerciseList.appendChild(createExerciseRow());
+  }
+  updateButtons();
+
+  // Add a new exercise row when "+ Add Exercise" is clicked
+  addExerciseBtn.addEventListener('click', addExerciseRow);
 
   // Remove an exercise row when the "×" button is clicked
   exerciseList.addEventListener('click', (e) => {
     const removeBtn = e.target.closest('.remove-btn');
-    if (!removeBtn) return;
+    if (!removeBtn || removeBtn.disabled) return;
     // Keep at least 1 exercise on the list
     if (exerciseList.children.length > 1) {
       removeBtn.closest('.exercise-item').remove();
+      updateButtons();
     }
   });
 } else {
