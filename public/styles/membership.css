@@ -52,7 +52,7 @@ header {
     display: flex;
     align-items: center;
     list-style: none;
-    gap: clamp(6px, 3vw, 100px); /* adjust */
+    gap: clamp(6px, 3vw, 100px);
     flex: 1;
     justify-content: space-evenly;
     flex-wrap: nowrap;
@@ -72,7 +72,7 @@ header {
 
 .navbar-item {
     list-style: none;
-    font-size: clamp(10px, 1.4vw, 12px); /* adjust */
+    font-size: clamp(10px, 1.4vw, 12px);
     font-weight: bold;
     white-space: nowrap;
     flex-shrink: 1;
@@ -85,7 +85,6 @@ header {
 
 /* BODY SECTION */
 #membership-section {
-    color: white;
     height: 100%;
     background-image: url(Images/BackgroundImage2.jpg);
     background-repeat: no-repeat;
