@@ -1,7 +1,9 @@
-// Makes the "+ Add Exercise" works aswell as "×" buttons in the custom workout modal.
+// Controls adding and deleting exercises in the custom workout modal
 
+// Get the container where exercise rows go
 const exerciseList = document.querySelector('.exercise-list');
 
+// Function to make a new exercise input row
 function createExerciseRow() {
   const row = document.createElement('div');
   row.className = 'exercise-item';
@@ -12,14 +14,3 @@ function createExerciseRow() {
   return row;
 }
 
-document.querySelector('.add-exercise-btn').addEventListener('click', () => {
-  exerciseList.appendChild(createExerciseRow());
-});
-
-exerciseList.addEventListener('click', (e) => {
-  if (e.target.classList.contains('remove-btn')) {
-    if (exerciseList.children.length > 1) {
-      e.target.closest('.exercise-item').remove();
-    }
-  }
-});
