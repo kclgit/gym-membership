@@ -37,6 +37,7 @@ body::before {
     box-sizing: border-box;
 }
 
+
 /* NAVIGATION BAR SECTION */
 header {
     background-color: black;
@@ -71,7 +72,7 @@ header {
     display: flex;
     align-items: center;
     list-style: none;
-    gap: clamp(6px, 3vw, 100px);
+    gap: clamp(6px, 3vw, 100px); /* adjust */
     flex: 1;
     justify-content: space-evenly;
     flex-wrap: nowrap;
@@ -91,7 +92,7 @@ header {
 
 .navbar-item {
     list-style: none;
-    font-size: clamp(10px, 1.4vw, 12px);
+    font-size: clamp(10px, 1.4vw, 12px); /* adjust */
     font-weight: bold;
     white-space: nowrap;
     flex-shrink: 1;
@@ -107,6 +108,7 @@ header {
     color: white;
     font-size: clamp(36px, 2.917vw, 72px);
     font-weight: bolder;
+    margin: 0px auto;
     margin-top: 80px;
     padding: 50px;
     animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
@@ -416,7 +418,7 @@ header {
 .routines-title {
     font-size: 24px;
     font-weight: 700;
-    color: #111827;
+    color: white;
 }
 
 .view-all {
@@ -510,19 +512,6 @@ header {
     font-size: 16px;
     color: #9ca3af;
 }
-
-/* --- Responsive Media Queries --- */
-@media (min-width: 768px) {
-    .top-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    .routines-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-
-
 
 /* --- Responsive Media Queries --- */
 @media (min-width: 768px) {

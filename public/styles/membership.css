@@ -9,7 +9,6 @@ html, body {
 
 *, *::before, *::after {
     box-sizing: border-box;
-    text-align: center;
 }
 
 img {
@@ -26,7 +25,7 @@ header {
     top: 0;
     z-index: 1030;
     width: 100%;
-    box-shadow: 2px 2px 8px rgba(19, 19, 19, 0.662);
+    box-shadow: 2px 2px 8px rgb(0, 0,0, 0.3);
 }
 
 .navbar {
@@ -53,7 +52,7 @@ header {
     display: flex;
     align-items: center;
     list-style: none;
-    gap: clamp(6px, 3vw, 100px);
+    gap: clamp(6px, 3vw, 100px); /* adjust */
     flex: 1;
     justify-content: space-evenly;
     flex-wrap: nowrap;
@@ -73,7 +72,7 @@ header {
 
 .navbar-item {
     list-style: none;
-    font-size: clamp(10px, 1.4vw, 12px);
+    font-size: clamp(10px, 1.4vw, 12px); /* adjust */
     font-weight: bold;
     white-space: nowrap;
     flex-shrink: 1;

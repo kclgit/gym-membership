@@ -26,7 +26,7 @@ html, body {
     overflow-x: hidden;
     font-family: Arial, Helvetica, sans-serif;
     height: 100%;
-    background-image: url(public/Images/WorkoutBackground.jpg);
+    background-image: url(/public/Images/WorkoutBackground.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
@@ -118,6 +118,8 @@ header {
   padding: 40px;
   max-width: 1200px;
   margin: 0 auto;
+  animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
+     transform-origin: bottom;
 }
 
 .page-header {
@@ -130,12 +132,13 @@ header {
 }
 
 .page-header h1 {
+  color: white;
   font-size: 28px;
   margin-bottom: 8px;
 }
 
 .page-header p {
-  color: var(--text-gray);
+  color: white;
 }
 
 
@@ -421,6 +424,9 @@ header {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: rgb(255, 255, 255); 
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
 }
 
 .workout-card:hover {
@@ -499,4 +505,15 @@ header {
   .workouts-container { padding: 20px; }
   .form-row { grid-template-columns: 1fr; }
   .modal-body { padding: 20px; }
+}
+
+@keyframes fade-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
 }
