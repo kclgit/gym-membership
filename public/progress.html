@@ -141,9 +141,9 @@
                 <a href="#" class="view-all">View all</a>
             </div>
             <div class="routines-grid">
-                
+
                 <!-- Card 1 -->
-                <div class="routine-card">
+                <div class="routine-card" data-routine="full-body" role="button" tabindex="0" aria-haspopup="dialog">
                     <div class="routine-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Full body hit" class="routine-image">
                     </div>
@@ -162,7 +162,7 @@
                 </div>
 
                 <!-- Card 2 -->
-                <div class="routine-card">
+                <div class="routine-card" data-routine="strength-power" role="button" tabindex="0" aria-haspopup="dialog">
                     <div class="routine-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Strength and Power" class="routine-image">
                     </div>
@@ -179,6 +179,35 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 3 -->
+                <div class="routine-card" data-routine="core" role="button" tabindex="0" aria-haspopup="dialog">
+                    <div class="routine-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Core workouts" class="routine-image" onerror="this.style.display='none'">
+                    </div>
+                    <div class="routine-content">
+                        <h3 class="routine-title">Core workouts</h3>
+                        <p class="routine-desc">Targeted abs and stability work to build a strong, balanced midsection.</p>
+                        <div class="routine-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">⏱</span> 20 - 25 Min
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">⚡</span> 220 Cal
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Routine Details Modal -->
+        <div class="routine-modal" id="routine-modal" aria-hidden="true">
+            <div class="routine-modal-box" role="dialog" aria-modal="true" aria-labelledby="routine-modal-title">
+                <button type="button" class="routine-modal-close" id="routine-modal-close" aria-label="Close">&times;</button>
+                <h2 id="routine-modal-title" class="routine-modal-title"></h2>
+                <p id="routine-modal-meta" class="routine-modal-meta"></p>
+                <ol id="routine-modal-list" class="routine-modal-list"></ol>
             </div>
         </div>
     </main>
