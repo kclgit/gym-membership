@@ -1,13 +1,15 @@
+
 {
-"name": "GymTrack - Gym Tracking App",
-"short_name": "GymTrack",
-"description": "Manage gym memberships, check-in, and workouts",
-"start_url": "./index.html",
-"scope": "./",
-"display": "standalone",
-"background_color": "black",
-"theme_color": "white",
-"icons": [
+  "id": "./",
+  "name": "GymTrack - Gym Tracking App",
+  "short_name": "GymTrack",
+  "description": "Manage gym memberships, check-in, and workouts",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#171717",
+  "theme_color": "#171717",
+  "icons": [
     {
         "src": "./Images/icon-192.png",
         "sizes": "192x192",
