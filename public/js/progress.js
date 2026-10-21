@@ -85,3 +85,104 @@
     select.addEventListener('change', () => render(select.value));
     render(select.value);
 })();
+
+// Routine cards: click a card to see its workouts
+(function () {
+    const ROUTINES = {
+        'full-body': {
+            title: 'Full body hit',
+            meta: '30 min · 320 Cal · High intensity',
+            workouts: [
+                ['Jumping Jacks', '45 sec'],
+                ['Burpees', '40 sec'],
+                ['Squat Jumps', '40 sec'],
+                ['Mountain Climbers', '45 sec'],
+                ['Push-ups', '3 x 12'],
+                ['Kettlebell Swings', '3 x 15'],
+                ['High Knees', '45 sec'],
+                ['Plank to Down Dog', '3 x 10']
+            ]
+        },
+        'strength-power': {
+            title: 'Strength and Power',
+            meta: '30 - 45 min · 450 Cal · Compound lifts',
+            workouts: [
+                ['Barbell Back Squat', '4 x 6'],
+                ['Deadlift', '4 x 5'],
+                ['Bench Press', '4 x 8'],
+                ['Overhead Press', '3 x 8'],
+                ['Barbell Row', '3 x 10'],
+                ['Pull-ups', '3 x 8']
+            ]
+        },
+        'core': {
+            title: 'Core workouts',
+            meta: '20 - 25 min · 220 Cal · Abs and stability',
+            workouts: [
+                ['Plank', '3 x 45 sec'],
+                ['Bicycle Crunches', '3 x 20'],
+                ['Russian Twists', '3 x 20'],
+                ['Leg Raises', '3 x 12'],
+                ['Dead Bug', '3 x 12'],
+                ['Side Plank', '2 x 30 sec each']
+            ]
+        }
+    };
+
+    const modal = document.getElementById('routine-modal');
+    const titleEl = document.getElementById('routine-modal-title');
+    const metaEl = document.getElementById('routine-modal-meta');
+    const listEl = document.getElementById('routine-modal-list');
+    const closeBtn = document.getElementById('routine-modal-close');
+    if (!modal) return;
+
+    let lastFocused = null;
+
+    function openModal(key) {
+        const routine = ROUTINES[key];
+        if (!routine) return;
+        titleEl.textContent = routine.title;
+        metaEl.textContent = routine.meta;
+        listEl.innerHTML = '';
+        routine.workouts.forEach(([name, detail]) => {
+            const li = document.createElement('li');
+            const n = document.createElement('span');
+            n.className = 'workout-name';
+            n.textContent = name;
+            const d = document.createElement('span');
+            d.className = 'workout-detail';
+            d.textContent = detail;
+            li.appendChild(n);
+            li.appendChild(d);
+            listEl.appendChild(li);
+        });
+        lastFocused = document.activeElement;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+    }
+
+    function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastFocused) lastFocused.focus();
+    }
+
+    document.querySelectorAll('.routine-card').forEach(card => {
+        card.addEventListener('click', () => openModal(card.dataset.routine));
+        card.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openModal(card.dataset.routine);
+            }
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+})();
