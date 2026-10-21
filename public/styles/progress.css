@@ -543,6 +543,7 @@ header {
     transition: box-shadow 0.2s, transform 0.2s;
     animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
     transform-origin: bottom;
+    margin-bottom: 40px;
 }
 
 .routine-card:hover,

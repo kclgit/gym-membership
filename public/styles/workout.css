@@ -583,8 +583,7 @@ header {
 
 
 @media (max-width: 600px) {
-  .navbar { padding: 16px 20px; }
-  .nav-links { display: none; }
+  .navbar {padding: 0 clamp(8px, 2vw, 30px);}
   .workouts-container { padding: 20px; }
   .form-row { grid-template-columns: 1fr; }
   .modal-body { padding: 20px; }
