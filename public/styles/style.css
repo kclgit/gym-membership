@@ -93,7 +93,8 @@ header {
     width: 100%;
     background-color: grey;
     overflow: hidden;
-    background-image: url(../Images/GymImage.jpg)
+    background-image: url(../Images/GymImage.jpg);
+    position: relative;
 }
 
 #home h1 {
@@ -110,12 +111,6 @@ header {
     color: white;
     animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
      transform-origin: bottom;
-}
-
-@media (max-width: 768px) {
-    #home {
-        background-attachment: scroll;
-    }
 }
 
 #home::before {
@@ -135,11 +130,13 @@ header {
   content: '';
   position: absolute;
   left: 0;
+  top: 0;
   bottom: 0;
   width: 100%;
   height: 40%;
   background: linear-gradient(to bottom, rgba(10, 10, 10, 0), rgba(0, 0, 0, 0.158));
   pointer-events: none;
+  filter: blur(60px);
 }
 
 @keyframes fade-up {
@@ -150,6 +147,12 @@ header {
     100% {
         opacity: 1;
         transform: translateY(0px) scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    #home {
+        background-attachment: scroll;
     }
 }
 
