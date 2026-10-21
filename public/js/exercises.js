@@ -11,7 +11,7 @@ function createExerciseRow() {
   const row = document.createElement('div');
   row.className = 'exercise-item';
   row.innerHTML = `
-    <input type="text" name="exercise" placeholder="Exercise name">
+    <input type="text" name="exercise" list="exercise-options" placeholder="Exercise name">
     <button type="button" class="remove-btn" aria-label="Remove exercise">&times;</button>
   `;
   return row;
