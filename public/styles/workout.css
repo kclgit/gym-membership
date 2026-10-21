@@ -114,6 +114,12 @@ header {
     color: grey;
 }
 
+.navbar a.active {
+    color: #f5b301;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
 .workouts-container {
   padding: 40px;
   max-width: 1200px;

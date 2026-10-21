@@ -81,6 +81,12 @@ header {
     color: grey;
 }
 
+.navbar a.active {
+    color: #f5b301;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
 /* BODY SECTION */
 #home {
     display: flex;
