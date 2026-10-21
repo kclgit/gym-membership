@@ -534,25 +534,29 @@ header {
 }
 
 .routine-card {
-    background-color: #ffffff;
     border-radius: 16px;
-    border: 1px solid #f3f4f6;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
     overflow: hidden;
     cursor: pointer;
     transition: box-shadow 0.2s, transform 0.2s;
+    animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
+    transform-origin: bottom;
 }
 
-.routine-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+.routine-card:hover,
+.routine-card:focus-visible {
+    box-shadow: 0px 0px 20px 8px rgb(230, 230, 230);
     transform: translateY(-2px);
+    outline: none;
 }
 
 .routine-image-wrapper {
     position: relative;
     height: 192px;
     overflow: hidden;
-    background-color: #f3f4f6;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .routine-image {
@@ -573,19 +577,19 @@ header {
 .routine-title {
     font-size: 18px;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 4px;
+    color: white;
+    margin: 0 0 4px;
     transition: color 0.2s;
 }
 
 .routine-card:hover .routine-title {
-    color: #2563eb;
+    color: #93c5fd;
 }
 
 .routine-desc {
     font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 24px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 24px;
 }
 
 .routine-meta {
@@ -593,7 +597,7 @@ header {
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    color: #6b7280;
+    color: white;
 }
 
 .meta-item {
@@ -604,7 +608,108 @@ header {
 
 .meta-icon {
     font-size: 16px;
-    color: #9ca3af;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Routine Details Modal --- */
+.routine-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.routine-modal.open {
+    display: flex;
+}
+
+.routine-modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px;
+    border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
+    color: white;
+    animation: fade-up 0.4s cubic-bezier(.69,.21,.12,1.09);
+}
+
+.routine-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.routine-modal-close:hover {
+    color: #93c5fd;
+}
+
+.routine-modal-title {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.routine-modal-meta {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.routine-modal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: workout;
+}
+
+.routine-modal-list li {
+    counter-increment: workout;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.routine-modal-list li::before {
+    content: counter(workout);
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #dbeafe;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.workout-name {
+    flex: 1;
+    font-weight: 600;
+}
+
+.workout-detail {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
 }
 
 /* --- Responsive Media Queries --- */
@@ -619,6 +724,12 @@ header {
     }
     .routines-grid {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 992px) {
+    .routines-grid {
+        grid-template-columns: 1fr 1fr 1fr;
     }
 }
 
