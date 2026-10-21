@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Manifest.json -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#171717">
     <title>GymTrack</title>
     <!-- <link rel="icon" type="image/x-icon" href=""> -->
     <link rel ="stylesheet" href = "styles/style.css">
+
 </head>
 <body>
 
@@ -19,7 +23,7 @@
                 <li class="navbar-item"><a href="progress.html">Progress</a></li>
                 <li class="navbar-item"><a href="workout.html">Workouts</a></li>
             </ul>
-            <img src="images/UserProfile.jpeg" alt="user-profile">
+            <img src="Images/UserProfile.jpeg" alt="user-profile">
         </nav>
     </header>
 
@@ -50,6 +54,26 @@
             </div>
         </div>
     </main>
-    <script src="js/index.js"></script>
+    <!-- Your existing JavaScript file -->
+<script src="js/index.js"></script>
+
+<!-- Register the service worker separately -->
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/service-worker.js")
+                .then((registration) => {
+                    console.log(
+                        "GymTrack service worker registered:",
+                        registration.scope
+                    );
+                })
+                .catch((error) => {
+                    console.error("Service worker failed:", error);
+                });
+        });
+    }
+</script>
+
 </body>
 </html>
