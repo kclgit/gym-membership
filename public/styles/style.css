@@ -1,20 +1,42 @@
 html, body {
     margin: 0;
     padding: 0;
-    max-width: 100%;
-    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
     font-family: Arial, Helvetica, sans-serif;
+    background-image: url(../Images/ProgressBackground.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 10%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.778), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  z-index: 2;
 }
 
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
 
 /* NAVIGATION BAR SECTION */
 header {
@@ -151,62 +173,564 @@ header {
     to { transform: rotate(360deg); }
 }
 
-/* BODY SECTION */
-#home {
+/* --- Common Card Styles --- */
+#title {
+    color: white;
+    font-size: clamp(36px, 2.917vw, 72px);
+    font-weight: bolder;
+    margin: 0px auto;
+    margin-top: 80px;
+    padding: 50px;
+    animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
+     transform-origin: bottom;
+}
+
+.container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.card {
+    border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.2); 
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
+    animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
+     transform-origin: bottom;
+}
+
+/* --- Grid Layout --- */
+.top-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.left-col {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* --- Stat Cards --- */
+.stat-card {
+    padding: 24px;
+    display: flex;
     flex-direction: column;
     justify-content: center;
-    text-align: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-value span {
+    font-size: 18px;
+    font-weight: 400;
+    color: white;
+}
+
+.stat-trend {
+    display: flex;
     align-items: center;
-    height: 870px;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.trend-up {
+    color: #00ce4b;
+    font-weight: 500;
+}
+
+.trend-text {
+    color: white;
+    margin-left: 8px;
+}
+
+/* --- Calories Card Specifics --- */
+.calories-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calories-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.progress-ring-container {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.progress-ring {
     width: 100%;
-    background-color: grey;
-    overflow: hidden;
-    background-image: url(../Images/GymImage.jpg);
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    fill: none;
+    stroke-width: 3;
+}
+
+.progress-ring .bg {
+    stroke: #e5e7eb;
+}
+
+.progress-ring .progress {
+    stroke: #3b82f6;
+    stroke-dasharray: 40, 100;
+    stroke-linecap: round;
+}
+
+.progress-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+}
+
+/* --- Streak Card --- */
+.streak-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.streak-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.streak-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+}
+
+.streak-icon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.streak-days {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.streak-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    margin-right: 16px;
+    white-space: nowrap;
+}
+
+.days-grid {
+    display: flex;
+    gap: 12px;
+}
+
+.day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.day-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.day-circle.done {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.day-circle.missed {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+}
+
+.day-name {
+    font-size: 10px;
+    font-weight: 500;
+    color: white;
+}
+
+/* --- Weight Trend Chart --- */
+.chart-card {
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.chart-select-wrapper {
     position: relative;
 }
 
-#home h1 {
+.chart-select {
+    appearance: none;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 32px 8px 12px;
+    font-size: 14px;
+    color: black;
+    cursor: pointer;
+    outline: none;
+}
+
+.chart-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6b7280;
+    font-size: 10px;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 192px;
+    padding: 0 8px;
+    gap: 5px;
+}
+
+.chart-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.chart-bar {
+    width: 100%;
+    height: 0;
+    background-color: #f3f4f6;
+    border-radius: 8px 8px 0 0;
+    transition: height 0.6s cubic-bezier(.69,.21,.12,1.09), background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #111827;
+    overflow: hidden;
+}
+
+.chart-bar.active {
+    background-color: #93c5fd;
+}
+
+.chart-summary {
+    font-size: 13px;
     color: white;
-    font-size: clamp(28px, 2.917vw, 56px);
-    font-weight: bolder;
-    padding: 25px;
-    animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
-     transform-origin: bottom;
+    margin-top: 2px;
 }
 
-#home p {
-    font-size: clamp(18px, 1.458vw, 36px);
+.chart-summary .trend-up,
+.chart-summary .trend-down {
+    font-weight: 700;
+}
+
+.chart-summary .trend-down {
+    color: #ff6b6b;
+}
+
+.chart-label {
+    font-size: 12px;
+    font-weight: 500;
     color: white;
-    animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
-     transform-origin: bottom;
 }
 
-#home::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(255, 255, 255, 0));
-  pointer-events: none;
-  z-index: 2;
-  filter: blur(60px);
+.chart-label.active {
+    color: white;
+    font-weight: 700;
 }
 
-#home::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to bottom, rgba(10, 10, 10, 0), rgba(0, 0, 0, 0.158));
-  pointer-events: none;
-  filter: blur(60px);
+/* --- Popular Workout Routines --- */
+.routines-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.routines-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+}
+
+.view-all {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2563eb;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.view-all:hover {
+    color: #1e40af;
+}
+
+.routines-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.routine-card {
+    border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
+    transform-origin: bottom;
+}
+
+.routine-card:hover,
+.routine-card:focus-visible {
+    box-shadow: 0px 0px 20px 8px rgb(230, 230, 230);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.routine-image-wrapper {
+    position: relative;
+    height: 192px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.routine-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.routine-card:hover .routine-image {
+    transform: scale(1.05);
+}
+
+.routine-content {
+    padding: 20px;
+}
+
+.routine-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px;
+    transition: color 0.2s;
+}
+
+.routine-card:hover .routine-title {
+    color: #93c5fd;
+}
+
+.routine-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 24px;
+}
+
+.routine-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: white;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-icon {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Routine Details Modal --- */
+.routine-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.routine-modal.open {
+    display: flex;
+}
+
+.routine-modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px;
+    border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(44, 44, 44, 0.3);
+    box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
+    color: white;
+    animation: fade-up 0.4s cubic-bezier(.69,.21,.12,1.09);
+}
+
+.routine-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.routine-modal-close:hover {
+    color: #93c5fd;
+}
+
+.routine-modal-title {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.routine-modal-meta {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.routine-modal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: workout;
+}
+
+.routine-modal-list li {
+    counter-increment: workout;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.routine-modal-list li::before {
+    content: counter(workout);
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #dbeafe;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.workout-name {
+    flex: 1;
+    font-weight: 600;
+}
+
+.workout-detail {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+}
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 600px) {
+    .chart-bar { font-size: 8px; padding-top: 4px; }
+    .chart-label { font-size: 9px; }
+}
+
+@media (min-width: 768px) {
+    .top-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .routines-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 992px) {
+    .routines-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
 }
 
 @keyframes fade-up {
@@ -220,146 +744,4 @@ header {
     }
 }
 
-@media (max-width: 768px) {
-    #home {
-        background-attachment: scroll;
-    }
-}
 
-/* CHECK-IN SECTION */
-#check-in {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    height: 700px;
-    width: 100%;
-    overflow: hidden;
-    background-color: black;
-}
-#check-in h1 {
-    color: white;
-}
-
-#check-in p {
-    color: white;
-    padding-bottom: 10px;
-}
-
-#check-in img {
-    height: 300px;
-    width: 300px;
-}
-
-#check-in-border {
-    box-shadow: 0px 0px 10px 5px rgb(148, 148, 148);
-}
-
-#check-in::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.505), rgba(255, 255, 255, 0));
-  pointer-events: none;
-  z-index: 2;
-}
-
-#check-in::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 30%;
-  background: linear-gradient(to bottom, rgba(40, 40, 40, 0), rgb(0, 0, 0));
-  pointer-events: none;
-}
-
-/* MEMBERSHIP SECTION  */
-#membership-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    height: 500px;
-    width: 100%;
-    background-color: black;
-    flex-direction: row-reverse;
-}
-
-#membership-img {
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-}
-
-#membership-img img {
-    width: 100%;
-    max-height: 450px;
-    display: block;
-    max-width: fit-content;
-}
-
-#membership-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin: 30px;
-}
-
-#membership-container h1 {
-    color: white;
-    font-size: clamp(22px, 2.917vw, 56px);
-    font-weight: bold;
-    padding: 10px;
-    white-space: nowrap;
-    text-align: center;
-}
-
-#membership-container p {
-    color: white;
-    font-size: clamp(16px, 1.458vw, 36px);
-    text-align: center;
-}
-
-.button a {
-    text-decoration: none;
-    color: black;
-    font-weight: bold;
-    font-size: clamp(14px, 1.2vw, 20px);
-}
-
-.button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 200px;
-    height: 50px;
-    padding: 10px;
-    margin: 20px auto 0;
-    background-color: white;
-    border-radius: 10px;
-    white-space: nowrap;
-}
-
-.button:hover {
-    background-color: rgb(118, 118, 118);
-    cursor: pointer;
-}
-/*
-@media (max-width: 768px) {
-    #membership-container {
-        background-image: scroll;
-    }
-}
-    */
