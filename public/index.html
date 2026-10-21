@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="white">
+     <!-- Manifest.json -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#171717">
+
     <title>GymTrack</title>
     <!-- <link rel="icon" type="image/x-icon" href=""> -->
     <link rel ="stylesheet" href = "styles/style.css">
@@ -53,6 +57,24 @@
             </div>
         </div>
     </main>
+    
+    <!-- Rservice worker for manifest.json -->
+    <script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/service-worker.js")
+                .then((registration) => {
+                    console.log(
+                        "GymTrack service worker registered:",
+                        registration.scope
+                    );
+                })
+                .catch((error) => {
+                    console.error("Service worker failed:", error);
+                });
+        });
+    }
+</script>
 
 </body>
 </html>
