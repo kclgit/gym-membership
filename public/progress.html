@@ -118,38 +118,20 @@
           <!-- Weight Trend Chart -->
         <div class="card chart-card">
             <div class="chart-header">
-                <h2 class="chart-title">Weight Trend</h2>
+                <div>
+                    <h2 class="chart-title">Weight Trend</h2>
+                    <div class="chart-summary" id="weight-summary"></div>
+                </div>
                 <div class="chart-select-wrapper">
-                    <select class="chart-select">
-                        <option>Last 30 Days</option>
-                        <option>Last 3 Months</option>
-                        <option>Last Year</option>
+                    <select class="chart-select" id="weight-range">
+                        <option value="30d">Last 30 Days</option>
+                        <option value="3m">Last 3 Months</option>
+                        <option value="1y">Last Year</option>
                     </select>
                     <span class="select-arrow">▼</span>
                 </div>
             </div>
-            <div class="chart-bars">
-                <div class="chart-bar-group">
-                    <div class="chart-bar" style="height: 40%;"></div>
-                    <span class="chart-label">Week 1</span>
-                </div>
-                <div class="chart-bar-group">
-                    <div class="chart-bar" style="height: 45%;"></div>
-                    <span class="chart-label">Week 2</span>
-                </div>
-                <div class="chart-bar-group">
-                    <div class="chart-bar" style="height: 55%;"></div>
-                    <span class="chart-label">Week 3</span>
-                </div>
-                <div class="chart-bar-group">
-                    <div class="chart-bar" style="height: 65%;"></div>
-                    <span class="chart-label">Week 4</span>
-                </div>
-                <div class="chart-bar-group">
-                    <div class="chart-bar active" style="height: 85%;"></div>
-                    <span class="chart-label active">Now</span>
-                </div>
-            </div>
+            <div class="chart-bars" id="weight-chart"></div>
         </div>
 
            <!-- Popular Workout Routines -->
@@ -204,6 +186,7 @@
   <script src="js/nav.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/loading.js"></script>
+  <script src="js/progress.js"></script>
 
 </body>
 </html>
