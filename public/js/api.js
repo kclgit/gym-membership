@@ -4,24 +4,36 @@
 const API_BASE = '/backend/';
 
 async function apiRequest(method, endpoint, body) {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body)
-  });
+  // Show the spinner only if the request takes a moment
+  const timer = typeof setLoading === 'function'
+    ? setTimeout(() => setLoading(true), 150)
+    : null;
 
-  let data = null;
   try {
-    data = await res.json();
-  } catch (err) {
-    data = null;
-  }
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body)
+    });
 
-  if (!res.ok || !data || data.success !== true) {
-    throw new Error((data && data.message) || `Request failed (${res.status})`);
-  }
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (err) {
+      data = null;
+    }
 
-  return data;
+    if (!res.ok || !data || data.success !== true) {
+      throw new Error((data && data.message) || `Request failed (${res.status})`);
+    }
+
+    return data;
+  } finally {
+    if (timer) {
+      clearTimeout(timer);
+      setLoading(false);
+    }
+  }
 }
 
 const api = {

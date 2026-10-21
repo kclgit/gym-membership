@@ -69,7 +69,7 @@ if (saveWorkoutBtn) {
     const customExercises = typeof getExercises === 'function' ? getExercises() : [];
 
     if (nameInput === '') {
-      alert('Please enter a workout name!');
+      showToast('Please enter a workout name!', 'error');
       return;
     }
 
