@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "gymtrack-v2";
+const CACHE_NAME = "gymtrack-v3";
 
 const APP_FILES = [
   "./",
@@ -19,10 +19,17 @@ const APP_FILES = [
   "./js/toast.js",
   "./js/loading.js",
   "./js/modal.js",
+  "./js/membership.js",
+  "./js/qr-code.js",
+  "./js/sessions.js",
+  "./js/weights.js",
+  "./js/progress.js",
+  "./js/progress-stats.js",
 
   // CSS
   "./styles/style.css",
   "./styles/membership.css",
+  "./styles/create_membership.css",
   "./styles/progress.css",
   "./styles/workout.css",
 
@@ -135,14 +142,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // CSS, JavaScript and images: use cache first.
+  // CSS, JavaScript and images: try the network first so updates arrive,
+  // then fall back to the cached copy when offline.
   event.respondWith(
-    caches.match(request).then(async (cached) => {
-      if (cached) return cached;
-
-      try {
-        const response = await fetch(request);
-
+    fetch(request)
+      .then((response) => {
         if (response.ok) {
           const copy = response.clone();
 
@@ -152,14 +156,18 @@ self.addEventListener("fetch", (event) => {
         }
 
         return response;
-      } catch {
+      })
+      .catch(async () => {
+        const cached = await caches.match(request);
+
+        if (cached) return cached;
+
         return new Response("Asset unavailable offline.", {
           status: 503,
           headers: {
             "Content-Type": "text/plain; charset=utf-8"
           }
         });
-      }
-    })
+      })
   );
 });

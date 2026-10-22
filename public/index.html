@@ -49,30 +49,6 @@
         </div>
     </main>
     
-    <!-- service worker for manifest.json -->
-    <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", async () => {
-      try {
-        const registration =
-          await navigator.serviceWorker.register(
-            "./service-worker.js"
-          );
-
-        console.log(
-          "GymTrack service worker registered:",
-          registration.scope
-        );
-      } catch (error) {
-        console.error(
-          "GymTrack service worker registration failed:",
-          error
-        );
-      }
-    });
-  }
-</script>
-
   <script src="js/nav.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/loading.js"></script>
