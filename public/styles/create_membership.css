@@ -1,0 +1,98 @@
+
+/* Membership buttons */
+.avail-btn {
+    cursor: pointer;
+    border: none;
+    font: inherit;
+}
+
+/* Registration modal */
+.modal[hidden] {
+    display: none !important;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.65);
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: white;
+    color: #222;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 25px;
+    border-radius: 12px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.modal-content h2 {
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+#membershipForm {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#membershipForm label {
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+#membershipForm input,
+#membershipForm select {
+    width: 100%;
+    padding: 11px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+#membershipForm input[readonly] {
+    background: #eee;
+    cursor: not-allowed;
+}
+
+#submitMembership {
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #222;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#submitMembership:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#formMessage {
+    overflow-wrap: anywhere;
+}
