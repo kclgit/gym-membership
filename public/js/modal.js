@@ -74,6 +74,8 @@ if (saveWorkoutBtn) {
     }
 
     const workoutGrid = document.querySelector('.workout-grid');
+    if (!workoutGrid) return;
+
     const newCard = document.createElement('div');
     newCard.className = 'workout-card';
     newCard.setAttribute('data-category', typeInput);
@@ -96,6 +98,19 @@ if (saveWorkoutBtn) {
     `;
 
     workoutGrid.prepend(newCard);
+
+    // A category filter would hide the new card, so show everything again.
+    const allFilter = document.getElementById('filter-all');
+    if (allFilter) allFilter.checked = true;
+
+    // Bring the new card into view and highlight it briefly.
+    newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    newCard.classList.add('just-added');
+    setTimeout(() => newCard.classList.remove('just-added'), 1600);
+
+    if (typeof showToast === 'function') {
+      showToast('Custom workout added');
+    }
 
     // Clear the form
     document.getElementById('workoutName').value = '';

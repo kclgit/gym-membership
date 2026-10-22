@@ -518,6 +518,19 @@ header {
   box-shadow: 0 12px 24px rgba(0,0,0,0.1);
 }
 
+.workout-card.just-added {
+  animation: card-added 1.6s ease;
+}
+
+@keyframes card-added {
+  0% {
+    box-shadow: 0 0 0 4px var(--primary);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
 .card-image {
   height: 160px;
   background-size: cover;
