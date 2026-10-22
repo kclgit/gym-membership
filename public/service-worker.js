@@ -22,6 +22,7 @@ const APP_FILES = [
   "./js/membership.js",
   "./js/qr-code.js",
   "./js/sessions.js",
+  "./js/custom-workouts.js",
   "./js/weights.js",
   "./js/progress.js",
   "./js/progress-stats.js",

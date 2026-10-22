@@ -78,20 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!card) return;
 
     const category = card.getAttribute('data-category');
-    const data = workoutData[category];
+    const data = card.hasAttribute('data-custom') ? null : workoutData[category];
 
-    let titleToDisplay = 'Custom Workout';
+    // Always trust the card's own title; the map only supplies built-in exercises.
+    const titleToDisplay = card.querySelector('h3').innerText;
     let exercisesToDisplay = [];
 
     if (data) {
-      titleToDisplay = data.title;
       exercisesToDisplay = data.exercises;
     } else {
-      titleToDisplay = card.querySelector('h3').innerText;
-      const savedExercises = card.getAttribute('data-exercises');
-      exercisesToDisplay = savedExercises
-        ? JSON.parse(savedExercises)
-        : ['Do your custom exercises!'];
+      try {
+        exercisesToDisplay = JSON.parse(card.getAttribute('data-exercises') || '[]');
+      } catch (err) {
+        exercisesToDisplay = [];
+      }
+    }
+
+    if (!exercisesToDisplay.length) {
+      exercisesToDisplay = ['Do your custom exercises!'];
     }
 
     currentWorkout = {
