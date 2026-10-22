@@ -2,7 +2,6 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    max-width: 100%;
     overflow-x: hidden;
     font-family: Arial, Helvetica, sans-serif;
     background-color: black; 
@@ -46,7 +45,7 @@ header {
     display: flex;
     align-items: center;
     list-style: none;
-    gap: clamp(6px, 3vw, 100px); /* adjust */
+    gap: clamp(6px, 3vw, 100px);
     flex: 1;
     justify-content: space-evenly;
     flex-wrap: nowrap;
@@ -83,7 +82,7 @@ header {
     text-underline-offset: 4px;
 }
 
-/* Toast notifications */
+/* TOAST NOTIFICATION SECTION */
 .toast-container {
     position: fixed;
     top: 80px;
@@ -119,7 +118,6 @@ header {
     background: #d63031;
 }
 
-/* Loading overlay */
 #loading-overlay {
     position: fixed;
     inset: 0;
@@ -150,7 +148,6 @@ header {
 /* BODY SECTION */
 #membership-section {
     color: white;
-    height: 100%;
     background-image: url(../Images/BackgroundImage2.jpg);
     background-repeat: no-repeat;
     background-size: cover;
@@ -167,14 +164,14 @@ header {
 
 body::before {
   content: '';
-  position: absolute;
+  position: relative;
   left: 0;
   top: 0;
   width: 100%;
   height: 20%;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.778), rgba(255, 255, 255, 0));
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
 }
 
 #membership-section h1 {
@@ -190,6 +187,8 @@ body::before {
     text-align: center;
     font-size: 22px;
     font-weight: bolder;
+    position: relative;
+    z-index: 2;
 }
 
 .price {
@@ -202,16 +201,18 @@ body::before {
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
-    gap: 40px;
-    padding: 0 20px;
+    align-items: stretch;
+    gap: clamp(12px, 2vw, 40px);
+    padding: 0 clamp(12px, 3vw, 30px);
     animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
      transform-origin: bottom;
 }
 
 .box {
-    width: 400px;
-    min-width: 300px;
-    flex-shrink: 0;
+    width: clamp(250px, 28vw, 400px);
+    min-width: 0;
+    flex: 1 1 280px;
+    max-width: 400px;
     background-color: black;
     border-radius: 20px;
     overflow: hidden;
@@ -223,18 +224,27 @@ body::before {
     box-shadow: 0px 0px 15px 5px rgb(200, 200, 200);
 }
 
+.button-container {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+}
+
 .button {
     background-color: white;
-    border-radius: 10px;
+    border-radius: 20px;
     color: black;
-    padding: 10px;
-    text-align:center;
-    font-weight: bold;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top:10px;
+    padding-bottom: 10px;
     overflow: hidden;
 }
 
 .button:hover {
-    background-color: rgb(169, 169, 169);
+    color: white;
+    background-color: black;
     cursor: pointer;
 }
 
@@ -249,7 +259,6 @@ body::before {
     }
 }
 
-/* MEMBERSHIP TRANSACTION POP-UP SECTION */
 .avail-now { 
     display: block; 
     width: 100%; 
@@ -444,7 +453,6 @@ body.modal-open {
     } 
 }
 
-/* Tablet and smaller desktop screens */
 @media screen and (max-width: 1024px) {
     #membership-section h1 {
         font-size: clamp(30px, 5vw, 48px);
@@ -453,49 +461,78 @@ body.modal-open {
     }
 
     #main-membership {
-        gap: 20px;
-        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+        padding: 0 24px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .box {
-        width: min(100%, 400px);
+        width: 100%;
+        max-width: 380px;
         min-width: 0;
-        flex: 1 1 300px;
-        margin: 10px;
+        flex: none;
+        margin: 0;
+        padding: 18px;
+        box-sizing: border-box;
+        border-radius: 16px;
     }
 }
 
-/* Mobile phones */
 @media screen and (max-width: 600px) {
-    /* Navigation */
+
     .navbar {
-        padding: 8px 12px;
-        gap: 8px;
+        display: flex;
+        align-items: center;
+        padding: 0 clamp(8px, 2vw, 30px);
+        box-sizing: border-box;
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow: hidden;
     }
 
     #navbar-title {
-        font-size: 15px;
-        white-space: nowrap;
-        margin-right: auto;
+        color: white;
+        font-weight: bold;
+    }
+
+    .navbar a {
+        text-decoration: none;
+        color: white;
     }
 
     .navbar-list {
-        gap: clamp(6px, 2vw, 12px);
-        flex: 0 1 auto;
-        justify-content: flex-end;
-    }
-
-    .navbar-item {
-        font-size: 10px;
-        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        list-style: none;
+        gap: clamp(6px, 3vw, 100px); /* adjust */
+        flex: 1;
+        justify-content: space-evenly;
+        flex-wrap: nowrap;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
     }
 
     .navbar img {
-        width: 26px;
-        height: 26px;
-        object-fit: cover;
-        flex-shrink: 0;
-        margin: 0;
+        height: auto;
+        width: clamp(20px, 4vw, 40px);
+        flex-shrink: 1;
+        min-width: 0;
+        margin: 10px;
+        border-radius: 50px;
+    }
+
+    .navbar-item {
+        list-style: none;
+        font-size: clamp(10px, 1.4vw, 12px); /* adjust */
+        font-weight: bold;
+        white-space: nowrap;
+        flex-shrink: 1;
+        min-width: 0;
     }
 
     /* Membership heading */
@@ -513,22 +550,24 @@ body.modal-open {
         padding: 25px 12px;
     }
 
-    /* Stack plan cards vertically */
     #main-membership {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 22px;
-        padding: 0 16px;
+        padding: 0 24px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .box {
         width: 100%;
-        max-width: 420px;
+        max-width: 380px;
         min-width: 0;
         flex: none;
         margin: 0;
-        padding: 20px;
+        padding: 18px;
+        box-sizing: border-box;
         border-radius: 16px;
     }
 
@@ -540,7 +579,6 @@ body.modal-open {
         font-size: 20px;
     }
 
-    /* Preserve the existing button appearance */
     .button.avail-now {
         display: block;
         width: 100%;
@@ -553,7 +591,6 @@ body.modal-open {
         cursor: pointer;
     }
 
-    /* Membership popup */
     .membership-modal {
         padding: 12px;
         align-items: center;
@@ -620,11 +657,10 @@ body.modal-open {
     }
 }
 
-/* Extra-small phones */
 @media screen and (max-width: 380px) {
     .navbar {
         gap: 5px;
-        padding: 8px;
+        padding: 0 8px;
     }
 
     #navbar-title {

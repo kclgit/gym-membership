@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles/create_membership.css">
     <link rel="manifest" href="manifest.json">
     <script src="./js/app.js"></script>
+    <script src="js/membership.js" defer></script>
 </head>
 <body>
 
@@ -38,10 +39,12 @@
             <p>Access to gym equipment</p>
             <p>Locker Room Access</p>
             <p>1 Group Class Per Week</p>
-            <button class="button avail-btn"
-                    type="button" data-plan="Promo">
-                Avail Now
-            </button>
+            <div class="button-container">
+                <button class="button avail-btn"
+                        type="button" data-plan="Promo">
+                    Avail Now
+                </button>
+            </div>
         </div>
 
         <div class="box" id="box-2">
@@ -51,10 +54,12 @@
             <p>Unlimited Gym Access</p>
             <p>Unlimited Group Classes</p>
             <p>Shower Access</p>
-            <button class="button avail-btn"
-                    type="button" data-plan="Regular">
-                Avail Now
-            </button>
+            <div class="button-container">
+                <button class="button avail-btn"
+                        type="button" data-plan="Regular">
+                    Avail Now
+                </button>
+            </div>
         </div>
 
         <div class="box" id="box-3">
@@ -64,10 +69,12 @@
             <p>Locker, Shower, & Unlimited Gym Access</p>
             <p>With In-house Trainer</p>
             <p>All Access (Weights and Combat)</p>
-            <button class="button avail-btn"
-                    type="button" data-plan="Premium">
-                Avail Now
-            </button>
+            <div class="button-container">
+                <button class="button avail-btn"
+                        type="button" data-plan="Premium">
+                    Avail Now
+                </button>
+            </div>
         </div>
     </div>
 </main>
@@ -132,6 +139,6 @@
   <script src="js/nav.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/loading.js"></script>
-  <script src="js/membership.js"></script>
+
 </body>
 </html>

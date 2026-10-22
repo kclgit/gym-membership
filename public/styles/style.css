@@ -6,6 +6,7 @@ html, body {
     padding: 0;
     width: 100%;
     overflow-x: hidden;
+    background-color: black;
     font-family: Arial, Helvetica, sans-serif;
 }
 
