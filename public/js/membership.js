@@ -1,222 +1,186 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("membershipModal");
+    const form = document.getElementById("membershipForm");
+    const planInput = document.getElementById("membership_type");
+    const planDisplay = document.getElementById("membership_plan_display");
 
-"use strict";
+    const planDetails = {
+    Promo: "Promo — ₱1,500/Month",
+    Regular: "Regular — ₱1,750/Month",
+    Premium: "Premium — ₱2,500/Month"
+    };
+    
+    const startDate = document.getElementById("starting_date");
+    const expirationDate = document.getElementById("expiration_date");
+    const message = document.getElementById("formMessage");
+    const submitButton = document.getElementById("submitMembership");
 
-// ========================================
-// GYМTRACK MEMBERSHIP TRANSACTION
-// ========================================
+    const allowedPlans = ["Promo", "Regular", "Premium"];
 
-// Membership buttons
-const availButtons = document.querySelectorAll(".avail-now");
+    function localDateString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
 
-// Pop-up elements
-const modal = document.getElementById("membership-modal");
-const closeButton = document.getElementById("close-membership-modal");
-const cancelButton = document.getElementById("cancel-membership");
+        return `${year}-${month}-${day}`;
+    }
 
-// Form elements
-const membershipForm = document.getElementById("membership-form");
-const planName = document.getElementById("selected-plan-name");
-const planPrice = document.getElementById("selected-plan-price");
-const planInput = document.getElementById("membership-plan");
-const priceInput = document.getElementById("membership-price");
-const startDateInput = document.getElementById("member-start-date");
-const message = document.getElementById("membership-form-message");
+    // Add one calendar month, handling dates like January 31.
+    function addOneMonth(dateString) {
+        if (!dateString) return "";
 
-const STORAGE_KEY = "gymtrack.pendingMembershipRequests";
+        const [year, month, day] = dateString.split("-").map(Number);
 
-// ========================================
-// OPEN POP-UP AND SELECT MEMBERSHIP
-// ========================================
+        const nextMonthDate = new Date(year, month, 1);
+        const lastDay = new Date(
+            nextMonthDate.getFullYear(),
+            nextMonthDate.getMonth() + 1,
+            0
+        ).getDate();
 
-availButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        // Read data from the button that was clicked
-        const selectedPlan = button.dataset.plan;
-        const selectedPrice = Number(button.dataset.price);
+        return localDateString(
+            new Date(
+                nextMonthDate.getFullYear(),
+                nextMonthDate.getMonth(),
+                Math.min(day, lastDay)
+            )
+        );
+    }
 
-        // Check whether the button contains valid information
-        if (
-            !selectedPlan ||
-            !Number.isFinite(selectedPrice) ||
-            selectedPrice <= 0
-        ) {
-            showMessage("Invalid membership plan. Please try again.", true);
+    const today = localDateString(new Date());
+
+    startDate.min = today;
+    startDate.value = today;
+    expirationDate.value = addOneMonth(today);
+
+    // Select the plan based on the button clicked.
+    document.querySelectorAll(".avail-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            const selectedPlan = button.dataset.plan;
+
+            if (!allowedPlans.includes(selectedPlan)) {
+                message.textContent = "Invalid membership plan.";
+                return;
+            }
+
+            // Automatically save the clicked plan in the hidden input.
+            planInput.value = selectedPlan;
+            planDisplay.value = planDetails[selectedPlan];
+
+            message.textContent = "";
+            modal.hidden = false;
+
+            startDate.min = today;
+            startDate.value = today;
+            expirationDate.value = addOneMonth(today);
+
+            document.getElementById("full_name").focus();
+        });
+    });
+
+    // Update expiration date when the start date changes.
+    startDate.addEventListener("change", () => {
+        expirationDate.value = addOneMonth(startDate.value);
+    });
+
+    // Close the registration modal.
+    document.getElementById("closeModal").addEventListener("click", () => {
+        modal.hidden = true;
+    });
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            modal.hidden = true;
+        }
+    });
+
+    // Submit membership registration.
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        message.textContent = "";
+
+        if (!form.reportValidity()) return;
+
+        if (!allowedPlans.includes(planInput.value)) {
+            message.textContent = "Please select a membership plan.";
             return;
         }
 
-        // Display the correct plan and price
-        planName.textContent = selectedPlan;
-        planPrice.textContent =
-            `₱${selectedPrice.toLocaleString("en-PH")}/month`;
-
-        // Store the selected values in the form
-        planInput.value = selectedPlan;
-        priceInput.value = String(selectedPrice);
-
-        // Clear previous messages and form data
-        membershipForm.reset();
-        planInput.value = selectedPlan;
-        priceInput.value = String(selectedPrice);
-        message.textContent = "";
-        message.className = "form-message";
-
-        // Set the earliest allowed start date to today
-        const today = new Date();
-        const localToday = [
-            today.getFullYear(),
-            String(today.getMonth() + 1).padStart(2, "0"),
-            String(today.getDate()).padStart(2, "0")
-        ].join("-");
-
-        startDateInput.min = localToday;
-
-        // Open the pop-up
-        modal.classList.add("is-open");
-        modal.setAttribute("aria-hidden", "false");
-
-        // Focus the first field
-        document.getElementById("member-name").focus();
-    });
-});
-
-// ========================================
-// CLOSE POP-UP
-// ========================================
-
-function closeModal() {
-    modal.classList.remove("is-open");
-    modal.setAttribute("aria-hidden", "true");
-    message.textContent = "";
-}
-
-closeButton.addEventListener("click", closeModal);
-cancelButton.addEventListener("click", closeModal);
-
-// Close when clicking outside the dialog
-modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-        closeModal();
-    }
-});
-
-// Close using the Escape key
-document.addEventListener("keydown", (event) => {
-    if (
-        event.key === "Escape" &&
-        modal.classList.contains("is-open")
-    ) {
-        closeModal();
-    }
-});
-
-// ========================================
-// DISPLAY FORM MESSAGES
-// ========================================
-
-function showMessage(text, isError = false) {
-    message.textContent = text;
-    message.className = isError
-        ? "form-message error"
-        : "form-message success";
-}
-
-// ========================================
-// SAVE MEMBERSHIP REQUEST
-// ========================================
-
-membershipForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    // Validate all required fields
-    if (!membershipForm.checkValidity()) {
-        membershipForm.reportValidity();
-        return;
-    }
-
-    // Read the selected membership
-    const selectedPlan = planInput.value;
-    const selectedPrice = Number(priceInput.value);
-
-    // Validate the selected plan against known prices
-    const validPlans = {
-        Promo: 1500,
-        Regular: 1750,
-        Premium: 2500
-    };
-
-    if (
-        !Object.prototype.hasOwnProperty.call(
-            validPlans,
-            selectedPlan
-        ) ||
-        validPlans[selectedPlan] !== selectedPrice
-    ) {
-        showMessage(
-            "Invalid membership selection. Please select a plan again.",
-            true
-        );
-        return;
-    }
-
-    // Collect the customer's information
-    const request = {
-        id: crypto.randomUUID(),
-        fullName: document.getElementById("member-name").value.trim(),
-        email: document.getElementById("member-email").value.trim(),
-        phone: document.getElementById("member-phone").value.trim(),
-        plan: selectedPlan,
-        price: selectedPrice,
-        startDate: startDateInput.value,
-        status: "pending",
-        syncStatus: "pending",
-        createdAt: new Date().toISOString()
-    };
-
-    // Validate that the name is not empty after trimming
-    if (!request.fullName) {
-        showMessage("Please enter your full name.", true);
-        return;
-    }
-
-    // Load existing requests from localStorage
-    let requests = [];
-
-    try {
-        const savedRequests = localStorage.getItem(STORAGE_KEY);
-        requests = savedRequests ? JSON.parse(savedRequests) : [];
-
-        if (!Array.isArray(requests)) {
-            throw new Error("Invalid saved membership data.");
+        if (startDate.value < today) {
+            message.textContent =
+                "The start date cannot be in the past.";
+            return;
         }
 
-        // Save the new request
-        requests.push(request);
+        expirationDate.value = addOneMonth(startDate.value);
 
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(requests)
+        const data = Object.fromEntries(
+            new FormData(form).entries()
         );
-    } catch (error) {
-        console.error("Unable to save membership request:", error);
 
-        showMessage(
-            "Unable to save your request on this device. Please check browser storage.",
-            true
-        );
-        return;
-    }
+        submitButton.disabled = true;
+        submitButton.textContent = "Saving...";
 
-    // Show successful submission
-    showMessage(
-        `Membership request submitted! Plan: ${request.plan}. ` +
-        `Price: ₱${request.price.toLocaleString("en-PH")}/month.`
-    );
+        try {
+            const response = await fetch(
+                "/312-mulong-midtermproject-1/backend/create_membership.php",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+            );
 
-    console.log("Membership request saved:", request);
+            const responseText = await response.text();
 
-    // Close the pop-up after a short delay
-    window.setTimeout(() => {
-        closeModal();
-        membershipForm.reset();
-    }, 1800);
+            let result;
+
+            try {
+                result = JSON.parse(responseText);
+            } catch {
+                console.error("Server response:", responseText);
+                throw new Error(
+                    "The server returned an invalid response. " +
+                    "Check the PHP error log."
+                );
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "Could not save membership."
+                );
+            }
+
+            // Show only the success message.
+            message.textContent =
+                "Membership registered successfully.";
+
+            form.reset();
+        planDisplay.value = "";
+
+            // Restore date fields after resetting the form.
+            startDate.min = today;
+            startDate.value = today;
+            expirationDate.value = addOneMonth(today);
+
+            // Clear the plan until another plan button is clicked.
+            planInput.value = "";
+
+            setTimeout(() => {
+                modal.hidden = true;
+                message.textContent = "";
+            }, 2500);
+
+        } catch (error) {
+            console.error("Membership registration error:", error);
+
+            message.textContent = error.message ||
+                "An error occurred while saving the membership.";
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = "Register Membership";
+        }
+    });
 });
