@@ -129,7 +129,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!timerOverlay || !timerDisplay) return;
 
     let remaining = minutes * 60; // seconds
+    const startedAt = Date.now();
+
     if (timerName) timerName.textContent = title;
+
+    // Log the session start to the backend (best effort)
+    const sessionPromise = api
+      .post('workout_session.php', { action: 'start', workout_name: title })
+      .then((res) => res.session_id)
+      .catch((err) => {
+        console.warn('Could not start session:', err.message);
+        return null;
+      });
 
     function render() {
       const m = String(Math.floor(remaining / 60)).padStart(2, '0');
@@ -143,9 +154,35 @@ document.addEventListener('DOMContentLoaded', () => {
       timerOverlay.classList.remove('active');
     }
 
-    function finish() {
+    let finished = false;
+
+    async function finish() {
+      if (finished) return;
+      finished = true;
       stop();
-      if (successToggle) successToggle.checked = true;
+
+      const sessionId = await sessionPromise;
+      const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
+
+      // Keep a local copy so the Progress page can show this session.
+      if (window.GymTrackSessions) {
+        window.GymTrackSessions.saveSession({ name: title, durationSeconds });
+      }
+
+      if (sessionId) {
+        try {
+          await api.post('workout_session.php', {
+            action: 'finish',
+            session_id: sessionId,
+            duration_seconds: durationSeconds
+          });
+          showToast('Workout saved!');
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      }
+
+      showToast('Workout complete!');
     }
 
     clearInterval(timerInterval);
@@ -164,10 +201,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
+  // Show the "Workout Started!" popup first, then start the timer when dismissed
+  let pendingWorkout = null;
+
   if (startTimerBtn) {
     startTimerBtn.addEventListener('click', () => {
       closeDetailsModal();
-      startTimer(currentWorkout.minutes, currentWorkout.title);
+      pendingWorkout = currentWorkout;
+      if (successToggle) successToggle.checked = true;
+    });
+  }
+
+  const successBtn = document.querySelector('.success-btn');
+  if (successBtn) {
+    successBtn.addEventListener('click', () => {
+      if (!pendingWorkout) return;
+      const { minutes, title } = pendingWorkout;
+      pendingWorkout = null;
+      startTimer(minutes, title);
     });
   }
 });
