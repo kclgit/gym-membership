@@ -1,6 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
+    width: 100%;
     max-width: 100%;
     overflow-x: hidden;
     font-family: Arial, Helvetica, sans-serif;
@@ -156,10 +157,12 @@ header {
     background-position: center center;
     background-attachment: fixed;
     min-height: 100vh;
+    height: auto;
     gap: 10px;
     margin: 0;
     position: relative;
     overflow: hidden;
+    padding-bottom: 40px;
 }
 
 body::before {
@@ -200,6 +203,7 @@ body::before {
     flex-direction: row;
     justify-content: center;
     gap: 40px;
+    padding: 0 20px;
     animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
      transform-origin: bottom;
 }
@@ -438,4 +442,221 @@ body.modal-open {
     .modal-actions button { 
         width:100%; 
     } 
+}
+
+/* Tablet and smaller desktop screens */
+@media screen and (max-width: 1024px) {
+    #membership-section h1 {
+        font-size: clamp(30px, 5vw, 48px);
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    #main-membership {
+        gap: 20px;
+        padding: 0 20px;
+    }
+
+    .box {
+        width: min(100%, 400px);
+        min-width: 0;
+        flex: 1 1 300px;
+        margin: 10px;
+    }
+}
+
+/* Mobile phones */
+@media screen and (max-width: 600px) {
+    /* Navigation */
+    .navbar {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    #navbar-title {
+        font-size: 15px;
+        white-space: nowrap;
+        margin-right: auto;
+    }
+
+    .navbar-list {
+        gap: clamp(6px, 2vw, 12px);
+        flex: 0 1 auto;
+        justify-content: flex-end;
+    }
+
+    .navbar-item {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .navbar img {
+        width: 26px;
+        height: 26px;
+        object-fit: cover;
+        flex-shrink: 0;
+        margin: 0;
+    }
+
+    /* Membership heading */
+    #membership-section {
+        background-attachment: scroll;
+        padding-top: 55px;
+        padding-bottom: 30px;
+    }
+
+    #membership-section h1 {
+        font-size: clamp(26px, 7vw, 36px);
+        line-height: 1.2;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 25px 12px;
+    }
+
+    /* Stack plan cards vertically */
+    #main-membership {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+        padding: 0 16px;
+    }
+
+    .box {
+        width: 100%;
+        max-width: 420px;
+        min-width: 0;
+        flex: none;
+        margin: 0;
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .title {
+        font-size: 21px;
+    }
+
+    .price {
+        font-size: 20px;
+    }
+
+    /* Preserve the existing button appearance */
+    .button.avail-now {
+        display: block;
+        width: 100%;
+        padding: 12px 10px;
+        border: none;
+        border-radius: 10px;
+        font: inherit;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    /* Membership popup */
+    .membership-modal {
+        padding: 12px;
+        align-items: center;
+    }
+
+    .membership-dialog {
+        width: 100%;
+        max-width: 480px;
+        max-height: 90dvh;
+        padding: 24px 18px;
+        border-radius: 14px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .membership-dialog h2 {
+        font-size: 22px;
+        padding-right: 12px;
+    }
+
+    .modal-subtitle {
+        font-size: 13px;
+        margin-bottom: 16px;
+    }
+
+    .selected-plan {
+        padding: 12px;
+        margin-bottom: 14px;
+    }
+
+    #membership-form {
+        gap: 7px;
+    }
+
+    #membership-form input:not([type="checkbox"]),
+    #membership-form textarea {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 11px;
+        font-size: 16px;
+    }
+
+    #membership-form .consent-label {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    #membership-form .consent-label input {
+        flex-shrink: 0;
+    }
+
+    .modal-actions {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .modal-actions button {
+        width: 100%;
+        min-height: 44px;
+        padding: 12px 16px;
+        border-radius: 8px;
+    }
+}
+
+/* Extra-small phones */
+@media screen and (max-width: 380px) {
+    .navbar {
+        gap: 5px;
+        padding: 8px;
+    }
+
+    #navbar-title {
+        font-size: 13px;
+    }
+
+    .navbar-list {
+        gap: 5px;
+    }
+
+    .navbar-item {
+        font-size: 9px;
+    }
+
+    .navbar img {
+        width: 22px;
+        height: 22px;
+    }
+
+    #main-membership {
+        padding: 0 12px;
+    }
+
+    .box {
+        padding: 16px;
+    }
+
+    .membership-modal {
+        padding: 8px;
+    }
+
+    .membership-dialog {
+        padding: 22px 14px;
+    }
 }
