@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#171717">
+    <meta name="theme-color" content="white">
     <title>GymTrack</title>
+    <!-- <link rel="icon" type="image/x-icon" href=""> -->
     <link rel ="stylesheet" href = "styles/membership.css">
+    <link rel="stylesheet" href="styles/create_membership.css">
     <link rel="manifest" href="manifest.json">
+    <script src="./js/app.js"></script>
 </head>
 <body>
 
@@ -24,200 +27,111 @@
         </nav>
     </header>
 
-    <main id="membership-section">
-        <h1>MEMBERSHIP PLANS</h1>
-        <div id="main-membership">
-            <div class="box">
-                <div id="box-1">
-                    <p class="title">Promo</p>
-                    <p>Perfect for Students, Elderly, and PWD.</p>
-                    <p class="price">₱1500/Month</p>
-                    <p>Unlimited Gym Access</p>
-                    <p>Locker Room Access</p>
-                    <p>Shower Access</p>
-                    <button
-                        type="button"
-                        class="button avail-now"
-                        data-plan="Promo"
-                        data-price="1500">
-                        Avail Now
-                    </button>
-                </div>
-            </div>    
+<main id="membership-section">
+    <h1>MEMBERSHIP PLANS</h1>
 
-            <div class="box"> 
-                <div id="box-2">
-                    <p class="title">Regular</p>
-                    <p>Standard Price.</p>
-                    <p class="price">₱1750/Month</p>
-                    <p>Unlimited Gym Access</p>
-                    <p>Locker Room Access</p>
-                    <p>Shower Access</p>
-                    <button
-                        type="button"
-                        class="button avail-now"
-                        data-plan="Regular"
-                        data-price="1750">
-                        Avail Now
-                    </button>
-                </div>
-            </div>   
-
-            <div class="box">
-                <div id="box-3">
-                    <p class="title">Premium</p>
-                    <p>All Access. Best Choice.</p>
-                    <p class="price">₱2500/Month</p>
-                    <p>Locker, Shower, & Unlimited Gym Access</p>
-                    <p>With In-house Trainer</p>
-                    <p>All Access (Weights and Combat)</p>
-                    <button
-                        type="button"
-                        class="button avail-now"
-                        data-plan="Premium"
-                        data-price="2500">
-                        Avail Now
-                    </button>
-                </div>
-            </div>
-
+    <div id="main-membership">
+        <div class="box" id="box-1">
+            <p class="title">Promo</p>
+            <p>Perfect for Students, Elderly, and PWD.</p>
+            <p class="price">₱1500/Month</p>
+            <p>Access to gym equipment</p>
+            <p>Locker Room Access</p>
+            <p>1 Group Class Per Week</p>
+            <button class="button avail-btn"
+                    type="button" data-plan="Promo">
+                Avail Now
+            </button>
         </div>
 
-    </main>
-<div
-        id="membership-modal"
-        class="membership-modal"
-        aria-hidden="true">
-
-        <section
-            class="membership-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="membership-modal-title">
-
-            <button
-                type="button"
-                id="close-membership-modal"
-                class="modal-close"
-                aria-label="Close membership form">
-                &times;
+        <div class="box" id="box-2">
+            <p class="title">Regular</p>
+            <p>Standard Price.</p>
+            <p class="price">₱1750/Month</p>
+            <p>Unlimited Gym Access</p>
+            <p>Unlimited Group Classes</p>
+            <p>Shower Access</p>
+            <button class="button avail-btn"
+                    type="button" data-plan="Regular">
+                Avail Now
             </button>
+        </div>
 
-            <h2 id="membership-modal-title">Avail Membership</h2>
-
-            <p class="modal-subtitle">
-                Complete your details to request a GymTrack membership.
-            </p>
-
-            <div class="selected-plan">
-                <span>Selected plan</span>
-
-                <strong id="selected-plan-name">Promo</strong>
-
-                <strong id="selected-plan-price">
-                    ₱1,500/month
-                </strong>
-            </div>
-
-            <form id="membership-form">
-
-                <input
-                    type="hidden"
-                    id="membership-plan"
-                    name="plan">
-
-                <input
-                    type="hidden"
-                    id="membership-price"
-                    name="price">
-
-                <label for="member-name">Full Name</label>
-                <input
-                    type="text"
-                    id="member-name"
-                    name="fullName"
-                    autocomplete="name"
-                    maxlength="100"
-                    placeholder="Enter your full name"
-                    required>
-
-                <label for="member-email">Email Address</label>
-                <input
-                    type="email"
-                    id="member-email"
-                    name="email"
-                    autocomplete="email"
-                    maxlength="150"
-                    placeholder="you@example.com"
-                    required>
-
-                <label for="member-phone">Phone Number</label>
-                <input
-                    type="tel"
-                    id="member-phone"
-                    name="phone"
-                    autocomplete="tel"
-                    maxlength="20"
-                    pattern="[0-9+() .-]{7,20}"
-                    title="Enter a valid phone number using 7 to 20 characters"
-                    placeholder="e.g. 09171234567"
-                    required>
-
-                <label for="member-start-date">
-                    Preferred Start Date
-                </label>
-                <input
-                    type="date"
-                    id="member-start-date"
-                    name="startDate"
-                    required>
-
-                <!-- Information Confirmation -->
-                <label class="consent-label">
-                    <input
-                        type="checkbox"
-                        id="membership-consent"
-                        required>
-
-                    <span>
-                        I confirm that the information above is correct.
-                    </span>
-                </label>
-
-                <p
-                    id="membership-form-message"
-                    class="form-message"
-                    role="status"
-                    aria-live="polite">
-                </p>
-
-                <div class="modal-actions">
-
-                    <button
-                        type="button"
-                        id="cancel-membership"
-                        class="secondary-button">
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="submit-membership">
-                        Submit Request
-                    </button>
-
-                </div>
-
-            </form>
-        </section>
+        <div class="box" id="box-3">
+            <p class="title">Premium</p>
+            <p>All Access. Best Choice.</p>
+            <p class="price">₱2500/Month</p>
+            <p>Locker, Shower, & Unlimited Gym Access</p>
+            <p>With In-house Trainer</p>
+            <p>All Access (Weights and Combat)</p>
+            <button class="button avail-btn"
+                    type="button" data-plan="Premium">
+                Avail Now
+            </button>
+        </div>
     </div>
+</main>
 
-    <!-- JavaScript Files -->
-    <script src="js/membership.js" defer></script>
-    <script src="js/nav.js"></script>
-    <script src="js/toast.js"></script>
-    <script src="js/loading.js"></script>
-    <script src="service-worker.js"></script>
+<!-- MEMBERSHIP REGISTRATION MODAL -->
+<div id="membershipModal" class="modal" hidden>
+    <div class="modal-content">
+        <button type="button" id="closeModal"
+                class="close-btn" aria-label="Close">&times;</button>
 
+        <h2>Membership Registration</h2>
+
+        <form id="membershipForm">
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name"
+                   maxlength="150" required>
+
+            <label for="address">Complete Address</label>
+            <input type="text" id="address" name="address"
+                   maxlength="255" required>
+
+            <label for="contact_no">Contact Number</label>
+            <input type="tel" id="contact_no" name="contact_no"
+                   maxlength="20" required
+                   pattern="[0-9+() -]{7,20}"
+                   title="Enter a valid contact number.">
+
+            <label for="emergency_contact_no">
+                Emergency Contact Number
+            </label>
+            <input type="tel" id="emergency_contact_no"
+                   name="emergency_contact_no"
+                   maxlength="20" required
+                   pattern="[0-9+() -]{7,20}"
+                   title="Enter a valid emergency contact number.">
+
+            <label for="membership_type">Membership Plan</label>
+            <input type="text" id="membership_plan_display" readonly placeholder="Selected membership plan will appear here">
+                   
+            <input type="hidden" id="membership_type" name="membership_type">
+
+            <label for="starting_date">Subscription Start Date</label>
+            <input type="date" id="starting_date"
+                   name="starting_date" required>
+
+            <label for="expiration_date">Expiration Date</label>
+            <input type="date" id="expiration_date"
+                   name="expiration_date" readonly required>
+
+            <p id="formMessage" role="status" aria-live="polite"></p>
+
+            <button type="submit" id="submitMembership">
+                Register Membership
+            </button>
+        </form>
+    </div>
+</div>
+   
+</main>
+
+
+  <script src="js/nav.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/loading.js"></script>
+  <script src="js/membership.js"></script>
 </body>
 </html>
