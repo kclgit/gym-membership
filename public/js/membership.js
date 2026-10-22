@@ -3,17 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("membershipForm");
     const planInput = document.getElementById("membership_type");
     const planDisplay = document.getElementById("membership_plan_display");
-
-    const planDetails = {
-    Promo: "Promo — ₱1,500/Month",
-    Regular: "Regular — ₱1,750/Month",
-    Premium: "Premium — ₱2,500/Month"
-    };
-    
     const startDate = document.getElementById("starting_date");
     const expirationDate = document.getElementById("expiration_date");
     const message = document.getElementById("formMessage");
     const submitButton = document.getElementById("submitMembership");
+    const closeButton = document.getElementById("closeModal");
+
+    if (!modal || !form || !planInput || !planDisplay || !startDate ||
+        !expirationDate || !message || !submitButton || !closeButton) {
+        return;
+    }
+
+    const planDetails = {
+        Promo: "Promo — ₱1,500/Month",
+        Regular: "Regular — ₱1,750/Month",
+        Premium: "Premium — ₱2,500/Month"
+    };
 
     const allowedPlans = ["Promo", "Regular", "Premium"];
 
@@ -48,10 +53,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const today = localDateString(new Date());
+    let lastFocused = null;
 
-    startDate.min = today;
-    startDate.value = today;
-    expirationDate.value = addOneMonth(today);
+    function resetDates() {
+        startDate.min = today;
+        startDate.value = today;
+        expirationDate.value = addOneMonth(today);
+    }
+
+    function openModal(plan) {
+        planInput.value = plan;
+        planDisplay.value = planDetails[plan];
+        message.textContent = "";
+
+        resetDates();
+        lastFocused = document.activeElement;
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+
+        const nameField = document.getElementById("full_name");
+        if (nameField) nameField.focus();
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+
+        if (lastFocused) {
+            lastFocused.focus();
+            lastFocused = null;
+        }
+    }
+
+    resetDates();
 
     // Select the plan based on the button clicked.
     document.querySelectorAll(".avail-btn").forEach(button => {
@@ -63,18 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Automatically save the clicked plan in the hidden input.
-            planInput.value = selectedPlan;
-            planDisplay.value = planDetails[selectedPlan];
-
-            message.textContent = "";
-            modal.hidden = false;
-
-            startDate.min = today;
-            startDate.value = today;
-            expirationDate.value = addOneMonth(today);
-
-            document.getElementById("full_name").focus();
+            openModal(selectedPlan);
         });
     });
 
@@ -83,15 +106,14 @@ document.addEventListener("DOMContentLoaded", () => {
         expirationDate.value = addOneMonth(startDate.value);
     });
 
-    // Close the registration modal.
-    document.getElementById("closeModal").addEventListener("click", () => {
-        modal.hidden = true;
-    });
+    closeButton.addEventListener("click", closeModal);
 
     modal.addEventListener("click", event => {
-        if (event.target === modal) {
-            modal.hidden = true;
-        }
+        if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && !modal.hidden) closeModal();
     });
 
     // Submit membership registration.
@@ -107,8 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (startDate.value < today) {
-            message.textContent =
-                "The start date cannot be in the past.";
+            message.textContent = "The start date cannot be in the past.";
             return;
         }
 
@@ -122,54 +143,22 @@ document.addEventListener("DOMContentLoaded", () => {
         submitButton.textContent = "Saving...";
 
         try {
-            const response = await fetch(
-                "/312-mulong-midtermproject-1/backend/create_membership.php",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                }
-            );
+            const result = await api.post("create_membership.php", data);
 
-            const responseText = await response.text();
-
-            let result;
-
-            try {
-                result = JSON.parse(responseText);
-            } catch {
-                console.error("Server response:", responseText);
-                throw new Error(
-                    "The server returned an invalid response. " +
-                    "Check the PHP error log."
-                );
-            }
-
-            if (!response.ok || !result.success) {
-                throw new Error(
-                    result.message || "Could not save membership."
-                );
-            }
-
-            // Show only the success message.
             message.textContent =
-                "Membership registered successfully.";
+                result.message || "Membership registered successfully.";
 
             form.reset();
-        planDisplay.value = "";
-
-            // Restore date fields after resetting the form.
-            startDate.min = today;
-            startDate.value = today;
-            expirationDate.value = addOneMonth(today);
-
-            // Clear the plan until another plan button is clicked.
+            planDisplay.value = "";
             planInput.value = "";
+            resetDates();
+
+            if (typeof showToast === "function") {
+                showToast("Membership registered");
+            }
 
             setTimeout(() => {
-                modal.hidden = true;
+                closeModal();
                 message.textContent = "";
             }, 2500);
 
@@ -178,6 +167,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             message.textContent = error.message ||
                 "An error occurred while saving the membership.";
+
+            if (typeof showToast === "function") {
+                showToast(error.message || "Could not save membership.", "error");
+            }
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = "Register Membership";

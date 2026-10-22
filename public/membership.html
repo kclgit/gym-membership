@@ -81,11 +81,11 @@
 
 <!-- MEMBERSHIP REGISTRATION MODAL -->
 <div id="membershipModal" class="modal" hidden>
-    <div class="modal-content">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="membershipTitle">
         <button type="button" id="closeModal"
                 class="close-btn" aria-label="Close">&times;</button>
 
-        <h2>Membership Registration</h2>
+        <h2 id="membershipTitle">Membership Registration</h2>
 
         <form id="membershipForm">
             <label for="full_name">Full Name</label>
@@ -111,7 +111,7 @@
                    pattern="[0-9+() -]{7,20}"
                    title="Enter a valid emergency contact number.">
 
-            <label for="membership_type">Membership Plan</label>
+            <label for="membership_plan_display">Membership Plan</label>
             <input type="text" id="membership_plan_display" readonly placeholder="Selected membership plan will appear here">
                    
             <input type="hidden" id="membership_type" name="membership_type">
@@ -133,12 +133,10 @@
     </div>
 </div>
    
-</main>
-
-
   <script src="js/nav.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/loading.js"></script>
+  <script src="js/api.js"></script>
 
 </body>
 </html>
