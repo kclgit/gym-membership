@@ -1,0 +1,131 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f7fc;
+    color: #172b45;
+}
+
+.offline-card {
+    width: 100%;
+    max-width: 560px;
+    padding: 40px 28px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #dce5f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(16, 36, 58, 0.08);
+}
+
+.brand {
+    margin-bottom: 32px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #10243a;
+}
+
+.brand span {
+    color: black;
+}
+
+.offline-icon {
+    margin-bottom: 18px;
+    font-size: 64px;
+}
+
+h1 {
+    margin: 0 0 14px;
+    font-size: clamp(26px, 5vw, 36px);
+}
+
+.description {
+    max-width: 420px;
+    margin: 0 auto 26px;
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 22px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+}
+
+.button-primary {
+    background: black;
+    color: #ffffff;
+}
+
+.button-primary:hover {
+    background: grey;
+}
+
+.button-secondary {
+    background: #ffffff;
+    color: #172b45;
+    border-color: #cbd5e1;
+}
+
+.button-secondary:hover {
+    background: #f1f5f9;
+}
+
+.info-box {
+    margin-top: 28px;
+    padding: 15px;
+    border: 1px solid #898989;
+    border-radius: 10px;
+    background: #cdcdcd;
+    color: black;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#connection-status {
+    margin-top: 18px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media (max-width: 420px) {
+    .offline-card {
+        padding: 32px 18px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+    }
+}

@@ -1,15 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#171717">
-    <title>GymTrack</title>
-    <link rel ="stylesheet" href = "">
-    <link rel="manifest" href="manifest.json">
-    <script src="./js/app.js"></script>
+    <meta name="theme-color" content="#10243a">
+    <title>Offline | GymTrack</title>
+    <link rel ="stylesheet" href = "styles/offline.css">
+    <script src="js/offline-db.js" defer></script>
+    <script src="js/offline.js" defer></script>
 </head>
+
 <body>
+    <main class="offline-card">
+        <div class="brand">Gym<span>Track</span></div>
+
+        <div class="offline-icon" aria-hidden="true">📡</div>
+
+        <h1>You're Offline</h1>
+
+        <p class="description">
+            It looks like you are not connected to the internet.
+            Don't worry, you can reconnect and continue using
+            GymTrack when your connection returns.
+        </p>
+
+        <div class="actions">
+            <button
+                type="button"
+                class="button button-primary"
+                id="retry-button"
+            >
+                ↻ Try Again
+            </button>
+
+            <a
+                class="button button-secondary"
+                href="index.html"
+            >
+                Go to Home
+            </a>
+        </div>
+
+        <div class="info-box">
+            Your saved offline membership registrations remain on
+            this device and can synchronize when the server is reachable.
+        </div>
+
+        <p id="connection-status" role="status" aria-live="polite">
+            Checking connection...
+        </p>
+    </main>
+
+     <script src="./js/register-sw.js"></script>
 
 </body>
 </html>

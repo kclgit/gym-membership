@@ -32,15 +32,20 @@ $contactNo = trim($input["contact_no"] ?? "");
 $emergencyContact = trim($input["emergency_contact_no"] ?? "");
 $membershipType = trim($input["membership_type"] ?? "");
 $startingDate = $input["starting_date"] ?? "";
+$offlineId = trim($input["offline_id"] ?? "");
 
-$allowedPlans = ["Promo", "Regular", "Premium"];
+$allowedPlans = [
+    "Promo" => 1,
+    "Regular" => 2,
+    "Premium" => 3
+];
 
 if (
     $fullName === "" ||
     $address === "" ||
     $contactNo === "" ||
     $emergencyContact === "" ||
-    !in_array($membershipType, $allowedPlans, true)
+    !isset($allowedPlans[$membershipType])
 ) {
     respond(422, [
         "success" => false,
@@ -72,14 +77,15 @@ if (
     ]);
 }
 
-// Validate the starting date and calculate expiration on the server.
+// Validate the starting date.
 $date = DateTimeImmutable::createFromFormat("!Y-m-d", $startingDate);
-$errors = DateTimeImmutable::getLastErrors();
+$dateErrors = DateTimeImmutable::getLastErrors();
 
 if (
     !$date ||
-    ($errors !== false &&
-        ($errors["warning_count"] > 0 || $errors["error_count"] > 0)) ||
+    ($dateErrors !== false &&
+        ($dateErrors["warning_count"] > 0 ||
+         $dateErrors["error_count"] > 0)) ||
     $date->format("Y-m-d") !== $startingDate
 ) {
     respond(422, [
@@ -88,16 +94,14 @@ if (
     ]);
 }
 
-$today = new DateTimeImmutable("today");
-
-if ($date < $today) {
+if ($date < new DateTimeImmutable("today")) {
     respond(422, [
         "success" => false,
         "message" => "The starting date cannot be in the past."
     ]);
 }
 
-// Add one calendar month, clamping dates such as January 31 to February 28/29.
+// Calculate one calendar month, clamping the day when necessary.
 $nextMonth = $date->modify("first day of next month");
 $lastDay = (int) $nextMonth->format("t");
 $day = min((int) $date->format("d"), $lastDay);
@@ -110,33 +114,63 @@ $expirationDate = $nextMonth
     )
     ->format("Y-m-d");
 
+$membershipTypeId = $allowedPlans[$membershipType];
+
+// Validate the optional idempotency key.
+if ($offlineId !== "") {
+    if (
+        strlen($offlineId) > 100 ||
+        !preg_match('/^[a-zA-Z0-9_-]+$/', $offlineId)
+    ) {
+        respond(422, [
+            "success" => false,
+            "message" => "Invalid offline registration ID."
+        ]);
+    }
+}
+
 try {
+    // If this request was already processed, report success without
+    // inserting another member.
+    if ($offlineId !== "") {
+        $check = $conn->prepare(
+            "SELECT member_id FROM members WHERE offline_id = ?"
+        );
+
+        $check->bind_param("s", $offlineId);
+        $check->execute();
+
+        $existing = $check->get_result()->fetch_assoc();
+        $check->close();
+
+        if ($existing) {
+            respond(200, [
+                "success" => true,
+                "message" => "Membership was already registered.",
+                "member_id" => (int) $existing["member_id"],
+                "duplicate" => true
+            ]);
+        }
+    }
+
     $sql = "INSERT INTO members
-    (name, address, contact_no, emergency_contact_no,
-     membership_type_id, starting_date, expiration_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?)";
+        (name, address, contact_no, emergency_contact_no,
+         membership_type_id, starting_date, expiration_date, offline_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-$stmt = $conn->prepare($sql);
+    $stmt = $conn->prepare($sql);
 
-$membershipTypeIds = [
-    "Promo" => 1,
-    "Regular" => 2,
-    "Premium" => 3
-    
-];
-
-$membershipTypeId = $membershipTypeIds[$membershipType];
-
-$stmt->bind_param(
-    "sssssis",
-    $fullName,
-    $address,
-    $contactNo,
-    $emergencyContact,
-    $membershipTypeId,
-    $startingDate,
-    $expirationDate
-);
+    $stmt->bind_param(
+        "ssssisss",
+        $fullName,
+        $address,
+        $contactNo,
+        $emergencyContact,
+        $membershipTypeId,
+        $startingDate,
+        $expirationDate,
+        $offlineId
+    );
 
     $stmt->execute();
     $memberId = $conn->insert_id;
@@ -145,6 +179,46 @@ $stmt->bind_param(
     respond(201, [
         "success" => true,
         "message" => "Membership registered successfully.",
+        "member_id" => $memberId,
+        "duplicate" => false
+    ]);
+
+} catch (mysqli_sql_exception $e) {
+    // Protect against two retries arriving at nearly the same time.
+    // The UNIQUE constraint on offline_id is essential here.
+    if ($offlineId !== "" && $e->getCode() === 1062) {
+        try {
+            $check = $conn->prepare(
+                "SELECT member_id FROM members WHERE offline_id = ?"
+            );
+
+            $check->bind_param("s", $offlineId);
+            $check->execute();
+
+            $existing = $check->get_result()->fetch_assoc();
+            $check->close();
+
+            if ($existing) {
+                respond(200, [
+                    "success" => true,
+                    "message" => "Membership was already registered.",
+                    "member_id" => (int) $existing["member_id"],
+                    "duplicate" => true
+                ]);
+            }
+        } catch (Throwable $lookupError) {
+            error_log(
+                "Offline membership duplicate lookup error: " .
+                $lookupError->getMessage()
+            );
+        }
+    }
+
+    error_log("Membership registration error: " . $e->getMessage());
+
+    respond(500, [
+        "success" => false,
+        "message" => "Unable to save membership. Please try again."
     ]);
 
 } catch (Throwable $e) {
@@ -152,7 +226,7 @@ $stmt->bind_param(
 
     respond(500, [
         "success" => false,
-        "message" => "Unable to save membership. Please check the database configuration and table columns."
+        "message" => "Unable to save membership. Please try again."
     ]);
 }
 ?>

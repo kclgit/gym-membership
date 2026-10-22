@@ -25,6 +25,9 @@ const APP_FILES = [
   "./js/weights.js",
   "./js/progress.js",
   "./js/progress-stats.js",
+  "./js/offline.js",
+  "./js/offline-db.js",
+  "./styles/offline.css",
 
   // CSS
   "./styles/style.css",
@@ -32,6 +35,7 @@ const APP_FILES = [
   "./styles/create_membership.css",
   "./styles/progress.css",
   "./styles/workout.css",
+  "./styles/offline.css",
 
   // Existing images
   "./Images/BackgroundImage2.jpg",
@@ -124,7 +128,7 @@ self.addEventListener("fetch", (event) => {
           if (cached) return cached;
 
           const offlinePage = await caches.match(
-            new URL("./offline.html", scopeUrl).href
+              new URL("./offline.html", self.registration.scope).href
           );
 
           return offlinePage || new Response(

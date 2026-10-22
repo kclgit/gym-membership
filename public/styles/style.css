@@ -168,7 +168,7 @@ header {
 
 #home h1 {
     color: white;
-    font-size: clamp(28px, 2.917vw, 56px);
+    font-size: clamp(24px, 2.917vw, 56px);
     font-weight: bolder;
     padding: 25px;
     animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
@@ -215,30 +215,40 @@ header {
 #check-in {
     position: relative;
     isolation: isolate;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-
     height: 700px;
     width: 100%;
     overflow: hidden;
     background-color: black;
 }
 
+#check-in-container {
+    width: clamp(600px, 28vw, 800px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(30, 30, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.657);
+    box-shadow: 0 0 15px 5px rgb(200, 200, 200);
+}
+
 #check-in h1 {
+    font-size: clamp(24px, 2.917vw, 56px);;
     color: white;
-    position: relative;
-    z-index: 2;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 #check-in p {
+    font-size: clamp(18px, 1.458vw, 36px);
     color: white;
-    padding-bottom: 10px;
-    position: relative;
-    z-index: 2;
+    padding-bottom: 20px;
 }
 
 #check-in img {
@@ -247,9 +257,10 @@ header {
 }
 
 #check-in-border {
-    box-shadow: 0px 0px 10px 5px rgb(148, 148, 148);
-    position: relative;
-    z-index: 2;
+    border: black;
+    max-width: fit-content;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 2px rgb(148, 148, 148);
 }
 
 #member-result {
@@ -268,34 +279,6 @@ header {
 #member-result.error {
     background: #fde7e7;
     color: #9b1515;
-}
-
-#check-in::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 40%;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.505),
-        rgba(255, 255, 255, 0)
-    );
-    pointer-events: none;
-    z-index: 1;
-}
-
-#check-in::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 30%;
-    background: linear-gradient(
-        to bottom,
-        rgba(40, 40, 40, 0),
-        rgb(0, 0, 0)
-    );
-    pointer-events: none;
-    z-index: 1;
 }
 
 /* MEMBERSHIP SECTION  */

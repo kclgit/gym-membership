@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("membershipModal");
     const form = document.getElementById("membershipForm");
@@ -9,10 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitButton = document.getElementById("submitMembership");
     const closeButton = document.getElementById("closeModal");
 
-    if (!modal || !form || !planInput || !planDisplay || !startDate ||
-        !expirationDate || !message || !submitButton || !closeButton) {
+    // Stop if this page does not contain the membership form.
+    if (
+        !modal || !form || !planInput || !planDisplay ||
+        !startDate || !expirationDate || !message ||
+        !submitButton || !closeButton
+    ) {
         return;
     }
+
+    // ========================================
+    // MEMBERSHIP PLAN CONFIGURATION
+    // ========================================
 
     const planDetails = {
         Promo: "Promo — ₱1,500/Month",
@@ -21,6 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const allowedPlans = ["Promo", "Regular", "Premium"];
+
+    // ========================================
+    // DATE FUNCTIONS
+    // ========================================
 
     function localDateString(date) {
         const year = date.getFullYear();
@@ -37,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const [year, month, day] = dateString.split("-").map(Number);
 
         const nextMonthDate = new Date(year, month, 1);
+
         const lastDay = new Date(
             nextMonthDate.getFullYear(),
             nextMonthDate.getMonth() + 1,
@@ -56,23 +70,43 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastFocused = null;
 
     function resetDates() {
-        startDate.min = today;
-        startDate.value = today;
-        expirationDate.value = addOneMonth(today);
+        startDate.min = localDateString(new Date());
+
+        if (!startDate.value) {
+            startDate.value = localDateString(new Date());
+        }
+
+        expirationDate.value = addOneMonth(startDate.value);
     }
 
+    // ========================================
+    // MODAL FUNCTIONS
+    // ========================================
+
     function openModal(plan) {
+        if (!allowedPlans.includes(plan)) {
+            message.textContent = "Invalid membership plan.";
+            return;
+        }
+
         planInput.value = plan;
         planDisplay.value = planDetails[plan];
         message.textContent = "";
+        message.className = "";
 
+        // Set a fresh default start and expiration date.
+        startDate.value = localDateString(new Date());
         resetDates();
+
         lastFocused = document.activeElement;
         modal.hidden = false;
         document.body.classList.add("modal-open");
 
         const nameField = document.getElementById("full_name");
-        if (nameField) nameField.focus();
+
+        if (nameField) {
+            nameField.focus();
+        }
     }
 
     function closeModal() {
@@ -85,41 +119,265 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    resetDates();
+    // ========================================
+    // INDEXEDDB OFFLINE STORAGE
+    // ========================================
 
-    // Select the plan based on the button clicked.
-    document.querySelectorAll(".avail-btn").forEach(button => {
-        button.addEventListener("click", () => {
-            const selectedPlan = button.dataset.plan;
+    const DB_NAME = "GymTrackOffline";
+    const STORE_NAME = "pendingMemberships";
+    let databasePromise = null;
 
-            if (!allowedPlans.includes(selectedPlan)) {
-                message.textContent = "Invalid membership plan.";
+    function openOfflineDB() {
+        if (databasePromise) {
+            return databasePromise;
+        }
+
+        databasePromise = new Promise((resolve, reject) => {
+            if (!("indexedDB" in window)) {
+                reject(new Error("IndexedDB is not supported."));
                 return;
             }
 
-            openModal(selectedPlan);
-        });
-    });
+            const request = indexedDB.open(DB_NAME, 1);
 
-    // Update expiration date when the start date changes.
-    startDate.addEventListener("change", () => {
-        expirationDate.value = addOneMonth(startDate.value);
+            request.onupgradeneeded = () => {
+                const db = request.result;
+
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, {
+                        keyPath: "offline_id"
+                    });
+                }
+            };
+
+            request.onsuccess = () => {
+                resolve(request.result);
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+
+            request.onblocked = () => {
+                console.error("Offline database upgrade is blocked.");
+            };
+        }).catch(error => {
+            // Permit another attempt if opening the database failed.
+            databasePromise = null;
+            throw error;
+        });
+
+        return databasePromise;
+    }
+
+    async function saveOfflineMembership(data) {
+        const db = await openOfflineDB();
+
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(
+                STORE_NAME,
+                "readwrite"
+            );
+
+            transaction.objectStore(STORE_NAME).put(data);
+
+            transaction.oncomplete = () => resolve();
+
+            transaction.onerror = () => {
+                reject(transaction.error);
+            };
+
+            transaction.onabort = () => {
+                reject(transaction.error || new Error(
+                    "Could not save membership offline."
+                ));
+            };
+        });
+    }
+
+    async function getPendingMemberships() {
+        const db = await openOfflineDB();
+
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(
+                STORE_NAME,
+                "readonly"
+            );
+
+            const request = transaction
+                .objectStore(STORE_NAME)
+                .getAll();
+
+            request.onsuccess = () => resolve(request.result);
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        });
+    }
+
+    async function removePendingMembership(offlineId) {
+        const db = await openOfflineDB();
+
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(
+                STORE_NAME,
+                "readwrite"
+            );
+
+            transaction.objectStore(STORE_NAME).delete(offlineId);
+
+            transaction.oncomplete = () => resolve();
+
+            transaction.onerror = () => {
+                reject(transaction.error);
+            };
+
+            transaction.onabort = () => {
+                reject(transaction.error || new Error(
+                    "Could not update offline storage."
+                ));
+            };
+        });
+    }
+
+    function createOfflineId() {
+        if (window.crypto?.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+
+        return `membership-${Date.now()}-${Math.random()
+            .toString(36).slice(2)}`;
+    }
+
+    // ========================================
+    // CONNECTION STATUS AND PENDING COUNT
+    // ========================================
+
+    async function updatePendingCount() {
+        const status = document.getElementById("offline-status");
+
+        if (!status) return;
+
+        try {
+            const pending = await getPendingMemberships();
+
+            status.textContent = navigator.onLine
+                ? `Online · ${pending.length} pending membership(s)`
+                : `Offline · ${pending.length} pending membership(s)`;
+        } catch (error) {
+            console.error("Could not read pending memberships:", error);
+
+            status.textContent = navigator.onLine
+                ? "Online · Offline storage unavailable"
+                : "Offline · Unable to access offline storage";
+        }
+    }
+
+    // ========================================
+    // SYNCHRONIZE PENDING MEMBERSHIPS
+    // ========================================
+
+    let isSyncing = false;
+
+    async function syncMemberships() {
+        if (!navigator.onLine || isSyncing) return;
+
+        isSyncing = true;
+
+        try {
+            const pending = await getPendingMemberships();
+
+            for (const membership of pending) {
+                // Stop if the connection disappears.
+                if (!navigator.onLine) break;
+
+                try {
+                    const result = await api.post(
+                        "create_membership.php",
+                        membership
+                    );
+
+                    // Do not remove records explicitly rejected by PHP.
+                    if (result && result.success === false) {
+                        console.error(
+                            "Membership rejected by server:",
+                            membership.offline_id,
+                            result.message
+                        );
+
+                        // Keep the record for inspection or a later retry.
+                        continue;
+                    }
+
+                    // Remove only after the server reports success.
+                    await removePendingMembership(
+                        membership.offline_id
+                    );
+
+                    console.log(
+                        "Membership synchronized:",
+                        membership.offline_id
+                    );
+                } catch (error) {
+                    console.error(
+                        "Membership sync failed; record remains queued:",
+                        membership.offline_id,
+                        error
+                    );
+
+                    // Retry on the next connection or page visit.
+                    break;
+                }
+            }
+        } catch (error) {
+            console.error("Could not synchronize memberships:", error);
+        } finally {
+            isSyncing = false;
+            await updatePendingCount();
+        }
+    }
+
+    // ========================================
+    // MEMBERSHIP PLAN BUTTONS
+    // ========================================
+
+    document.querySelectorAll(".avail-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            openModal(button.dataset.plan);
+        });
     });
 
     closeButton.addEventListener("click", closeModal);
 
     modal.addEventListener("click", event => {
-        if (event.target === modal) closeModal();
+        if (event.target === modal) {
+            closeModal();
+        }
     });
 
     document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && !modal.hidden) closeModal();
+        if (event.key === "Escape" && !modal.hidden) {
+            closeModal();
+        }
     });
 
-    // Submit membership registration.
+    // ========================================
+    // AUTOMATIC EXPIRATION DATE
+    // ========================================
+
+    startDate.addEventListener("change", () => {
+        expirationDate.value = addOneMonth(startDate.value);
+    });
+
+    // ========================================
+    // SUBMIT MEMBERSHIP REGISTRATION
+    // ========================================
+
     form.addEventListener("submit", async event => {
         event.preventDefault();
         message.textContent = "";
+        message.className = "";
 
         if (!form.reportValidity()) return;
 
@@ -128,52 +386,171 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (startDate.value < today) {
+        const currentDate = localDateString(new Date());
+
+        if (startDate.value < currentDate) {
             message.textContent = "The start date cannot be in the past.";
             return;
         }
 
         expirationDate.value = addOneMonth(startDate.value);
 
+        // Collect the form fields using their existing name attributes.
         const data = Object.fromEntries(
             new FormData(form).entries()
         );
+
+        // Every registration gets one stable ID for duplicate protection.
+        const requestData = {
+            ...data,
+            offline_id: createOfflineId()
+        };
 
         submitButton.disabled = true;
         submitButton.textContent = "Saving...";
 
         try {
-            const result = await api.post("create_membership.php", data);
+            if (!navigator.onLine) {
+                // Save locally first; do not pretend the server accepted it.
+                await saveOfflineMembership(requestData);
 
-            message.textContent =
-                result.message || "Membership registered successfully.";
+                message.textContent =
+                    "Membership saved on this device. It will sync when you're online.";
 
-            form.reset();
-            planDisplay.value = "";
-            planInput.value = "";
-            resetDates();
+                message.className = "success";
 
-            if (typeof showToast === "function") {
-                showToast("Membership registered");
+                if (typeof showToast === "function") {
+                    showToast("Membership saved offline");
+                }
+
+                form.reset();
+                planDisplay.value = "";
+                planInput.value = "";
+                resetDates();
+
+                await updatePendingCount();
+
+                setTimeout(() => {
+                    closeModal();
+                    message.textContent = "";
+                }, 2500);
+
+                return;
             }
 
-            setTimeout(() => {
-                closeModal();
-                message.textContent = "";
-            }, 2500);
+            try {
+                // Attempt normal online registration first.
+                const result = await api.post(
+                    "create_membership.php",
+                    requestData
+                );
 
+                if (result && result.success === false) {
+                    throw new Error(
+                        result.message || "Membership registration failed."
+                    );
+                }
+
+                message.textContent =
+                    result.message || "Membership registered successfully.";
+
+                message.className = "success";
+
+                if (typeof showToast === "function") {
+                    showToast("Membership registered");
+                }
+
+                form.reset();
+                planDisplay.value = "";
+                planInput.value = "";
+                resetDates();
+
+                setTimeout(() => {
+                    closeModal();
+                    message.textContent = "";
+                }, 2500);
+            } catch (error) {
+                // Queue only likely network failures. Do not silently queue
+                // validation or other server-side rejection errors.
+                const networkFailure =
+                    !navigator.onLine ||
+                    /failed to fetch|networkerror|network request failed|load failed|fetch failed/i
+                        .test(error.message || "");
+
+                if (!networkFailure) {
+                    throw error;
+                }
+
+                await saveOfflineMembership(requestData);
+
+                message.textContent =
+                    "The server could not be reached. Membership saved on this device and waiting to sync.";
+
+                message.className = "success";
+
+                if (typeof showToast === "function") {
+                    showToast("Membership saved offline");
+                }
+
+                form.reset();
+                planDisplay.value = "";
+                planInput.value = "";
+                resetDates();
+
+                await updatePendingCount();
+
+                setTimeout(() => {
+                    closeModal();
+                    message.textContent = "";
+                }, 2500);
+            }
         } catch (error) {
             console.error("Membership registration error:", error);
 
             message.textContent = error.message ||
-                "An error occurred while saving the membership.";
+                "Could not save membership. Please try again.";
+
+            message.className = "error";
 
             if (typeof showToast === "function") {
-                showToast(error.message || "Could not save membership.", "error");
+                showToast(
+                    error.message || "Could not save membership.",
+                    "error"
+                );
             }
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = "Register Membership";
         }
     });
+
+    // ========================================
+    // AUTOMATIC RETRY WHEN ONLINE
+    // ========================================
+
+    window.addEventListener("online", () => {
+        updatePendingCount();
+        syncMemberships();
+    });
+
+    window.addEventListener("offline", () => {
+        updatePendingCount();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            updatePendingCount();
+
+            if (navigator.onLine) {
+                syncMemberships();
+            }
+        }
+    });
+
+    // Initial status and retry when the page is opened.
+    updatePendingCount();
+
+    if (navigator.onLine) {
+        syncMemberships();
+    }
 });
