@@ -1,6 +1,6 @@
 <?php
-$servername = "root";
-$username = "gymtrack_user";
+$servername = "localhost";
+$username = "root";
 $password = "";
 $dbname = "small_gym_db";
 
