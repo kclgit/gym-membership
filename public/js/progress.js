@@ -1,70 +1,101 @@
-// Weight Trend chart: updates when the range dropdown changes.
-// Replace the sample numbers below with real data (e.g. from your API) when available.
+// Weight Trend chart: draws the real weight log for the selected range.
 (function () {
+    const store = window.GymTrackWeights;
     const chart = document.getElementById('weight-chart');
     const select = document.getElementById('weight-range');
     const summary = document.getElementById('weight-summary');
-    if (!chart || !select) return;
+    if (!store || !chart || !select) return;
 
     const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const RANGE_DAYS = { '30d': 30, '3m': 90, '1y': 365 };
+    const MAX_BARS = 12;
 
-    // Labels for the last 12 months, ending with the current month
-    function lastYearLabels() {
-        const now = new Date();
-        const labels = [];
-        for (let i = 11; i >= 0; i--) {
-            labels.push(MONTHS[new Date(now.getFullYear(), now.getMonth() - i, 1).getMonth()]);
-        }
-        labels[labels.length - 1] = 'Now';
-        return labels;
+    // ?demo=1 fills the chart with sample entries for a quick preview.
+    if (new URLSearchParams(location.search).get('demo') === '1') {
+        store.seedDemo();
     }
 
-    // Weight in kg
-    const DATA = {
-        '30d': {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Now'],
-            values: [70.0, 70.4, 71.0, 71.5, 72.3]
-        },
-        '3m': {
-            labels: ['Wk 2', 'Wk 4', 'Wk 6', 'Wk 8', 'Wk 10', 'Now'],
-            values: [68.2, 69.0, 69.8, 70.6, 71.4, 72.3]
-        },
-        '1y': {
-            labels: lastYearLabels(),
-            values: [63.5, 64.2, 65.0, 65.6, 66.5, 67.1, 67.9, 68.8, 69.6, 70.5, 71.4, 72.3]
-        }
-    };
+    function shortDate(date) {
+        return date.getDate() + ' ' + MONTHS[date.getMonth()];
+    }
 
-    function render(rangeKey) {
-        const { labels, values } = DATA[rangeKey];
+    function entriesInRange(days) {
+        const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+
+        return store.read()
+            .filter((entry) => new Date(entry.loggedAt).getTime() >= cutoff)
+            .sort((a, b) => new Date(a.loggedAt) - new Date(b.loggedAt));
+    }
+
+    // Keep the latest entry per day so the chart has one bar per day.
+    function daily(entries) {
+        const byDay = new Map();
+
+        entries.forEach((entry) => {
+            const date = new Date(entry.loggedAt);
+            const key = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+            byDay.set(key, entry);
+        });
+
+        return Array.from(byDay.values());
+    }
+
+    // Keep at most MAX_BARS points, evenly spaced, so labels stay readable.
+    function thin(entries) {
+        if (entries.length <= MAX_BARS) return entries;
+
+        const step = (entries.length - 1) / (MAX_BARS - 1);
+        const picked = [];
+        for (let i = 0; i < MAX_BARS; i += 1) {
+            picked.push(entries[Math.round(i * step)]);
+        }
+        return picked;
+    }
+
+    function render() {
+        const days = RANGE_DAYS[select.value] || 30;
+        const entries = thin(daily(entriesInRange(days)));
+
+        chart.innerHTML = '';
+
+        if (!entries.length) {
+            const empty = document.createElement('p');
+            empty.className = 'chart-empty';
+            empty.textContent = 'No weight logged in this period yet.';
+            chart.appendChild(empty);
+            summary.innerHTML = '';
+            return;
+        }
+
+        const values = entries.map((entry) => entry.kg);
         const min = Math.min(...values);
         const max = Math.max(...values);
         const span = max - min || 1;
-
-        chart.innerHTML = '';
         const bars = [];
 
-        values.forEach((value, i) => {
-            const isLast = i === values.length - 1;
+        entries.forEach((entry, i) => {
+            const isLast = i === entries.length - 1;
+            const date = new Date(entry.loggedAt);
 
             const group = document.createElement('div');
             group.className = 'chart-bar-group';
 
             const bar = document.createElement('div');
             bar.className = 'chart-bar' + (isLast ? ' active' : '');
-            bar.textContent = value.toFixed(1);
-            bar.title = value.toFixed(1) + ' kg';
+            bar.textContent = entry.kg.toFixed(1);
+            bar.title = entry.kg.toFixed(1) + ' kg on ' + shortDate(date);
 
             const label = document.createElement('span');
             label.className = 'chart-label' + (isLast ? ' active' : '');
-            label.textContent = labels[i];
+            label.textContent = isLast ? 'Now' : shortDate(date);
 
             group.appendChild(bar);
             group.appendChild(label);
             chart.appendChild(group);
 
             // scale bar between 30% and 85% of the chart height
-            bars.push({ bar, height: 30 + ((value - min) / span) * 55 });
+            const height = values.length === 1 ? 55 : 30 + ((entry.kg - min) / span) * 55;
+            bars.push({ bar, height });
         });
 
         // set heights on the next frame so the CSS transition animates
@@ -74,6 +105,11 @@
             });
         });
 
+        if (values.length === 1) {
+            summary.innerHTML = '<span class="trend-text">First entry: ' + values[0].toFixed(1) + ' kg</span>';
+            return;
+        }
+
         const diff = values[values.length - 1] - values[0];
         const cls = diff >= 0 ? 'trend-up' : 'trend-down';
         const arrow = diff >= 0 ? '⬆' : '⬇';
@@ -82,8 +118,37 @@
             '<span class="trend-text">over this period</span>';
     }
 
-    select.addEventListener('change', () => render(select.value));
-    render(select.value);
+    // Log a new weight from the input next to the chart.
+    const form = document.getElementById('weight-form');
+    const input = document.getElementById('weight-input');
+    if (form && input) {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const kg = Number(input.value);
+            if (!Number.isFinite(kg) || kg < 20 || kg > 400) {
+                if (typeof showToast === 'function') {
+                    showToast('Enter a weight between 20 and 400 kg.', 'error');
+                }
+                input.focus();
+                return;
+            }
+
+            store.saveWeight(kg);
+            input.value = '';
+            render();
+
+            if (typeof showToast === 'function') showToast('Weight logged');
+        });
+    }
+
+    select.addEventListener('change', render);
+    render();
+
+    // Keep the chart in sync if another tab logs a weight.
+    window.addEventListener('storage', (event) => {
+        if (event.key === store.key) render();
+    });
 })();
 
 // Routine cards: click a card to see its workouts

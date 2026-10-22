@@ -102,6 +102,12 @@
                 </div>
             </div>
             <div class="chart-bars" id="weight-chart"></div>
+            <form class="weight-form" id="weight-form">
+                <label for="weight-input">Log weight</label>
+                <input id="weight-input" name="weight" type="number" inputmode="decimal" step="0.1" min="20" max="400" placeholder="74.5" required>
+                <span class="weight-unit">kg</span>
+                <button type="submit">Save</button>
+            </form>
         </div>
 
         <!-- Weekly Activity Chart -->
@@ -205,6 +211,7 @@
   <script src="js/toast.js"></script>
   <script src="js/loading.js"></script>
   <script src="js/sessions.js"></script>
+  <script src="js/weights.js"></script>
   <script src="js/progress.js"></script>
   <script src="js/progress-stats.js"></script>
 

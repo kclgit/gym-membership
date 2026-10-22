@@ -771,6 +771,70 @@ header {
     font-weight: 700;
 }
 
+/* --- Weight logging form --- */
+.weight-form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 14px;
+    color: white;
+}
+
+.weight-form label {
+    font-weight: 600;
+}
+
+.weight-form input {
+    width: 90px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.weight-form input:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.25);
+}
+
+.weight-form input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.weight-unit {
+    margin-left: -6px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.weight-form button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.weight-form button:hover {
+    background: #1d4ed8;
+}
+
+.chart-empty {
+    margin: auto;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
 @keyframes fade-up {
     0% {
         opacity: 0;
