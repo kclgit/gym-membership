@@ -4,6 +4,9 @@
 const API_BASE = '/backend/';
 
 async function apiRequest(method, endpoint, body) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
   // Show the spinner only if the request takes a moment
   const timer = typeof setLoading === 'function'
     ? setTimeout(() => setLoading(true), 150)
@@ -13,7 +16,8 @@ async function apiRequest(method, endpoint, body) {
     const res = await fetch(`${API_BASE}${endpoint}`, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body)
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: controller.signal
     });
 
     let data = null;
@@ -28,7 +32,11 @@ async function apiRequest(method, endpoint, body) {
     }
 
     return data;
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('The request timed out.');
+    throw err;
   } finally {
+    clearTimeout(timeout);
     if (timer) {
       clearTimeout(timer);
       setLoading(false);
