@@ -1,44 +1,30 @@
-const status = document.getElementById("checkin-status");
-const resultBox = document.getElementById("member-result");
+// Home page check-in: a member QR code opens this page with ?token=<qr_token>.
+(function () {
+  const statusEl = document.getElementById('checkin-status');
+  const resultEl = document.getElementById('member-result');
 
-async function checkInMember() {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+  // Only run on the page that can show a result.
+  if (!statusEl || !resultEl) return;
 
-    if (!token) {
-        status.textContent = "Check-in unavailable";
-        resultBox.textContent = "No member QR token was provided.";
-        resultBox.className = "error";
-        return;
-    }
+  const token = new URLSearchParams(window.location.search).get('token');
 
-    try {
-        const response = await fetch("/api/checkin.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ token })
-        });
+  // A normal visit has no token, so leave the home page as it is.
+  if (!token) return;
 
-        const data = await response.json();
+  function show(kind, statusText, message) {
+    statusEl.textContent = statusText;
+    resultEl.textContent = message;
+    resultEl.className = kind;
+  }
 
-        status.textContent = data.success
-            ? "Check-in complete"
-            : "Check-in unsuccessful";
+  show('', 'Checking in...', '');
 
-        resultBox.textContent = data.message ||
-            "The server did not return a result.";
-
-        resultBox.className = data.success ? "success" : "error";
-
-    } catch (error) {
-        status.textContent = "Connection problem";
-        resultBox.textContent =
-            "Unable to reach GymTrack. Please try again.";
-        resultBox.className = "error";
-        console.error(error);
-    }
-}
-
-checkInMember();
+  api.post('qr_checkin_api.php', { qr_token: token })
+    .then((res) => {
+      const name = res.member_name || 'Member';
+      show('success', 'Check-in complete', `${name}: ${res.message || 'Check-in recorded.'}`);
+    })
+    .catch((err) => {
+      show('error', 'Check-in unsuccessful', err.message || 'Please try again.');
+    });
+})();

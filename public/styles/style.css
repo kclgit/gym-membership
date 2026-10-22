@@ -260,6 +260,20 @@ header {
     overflow-wrap: anywhere;
 }
 
+#member-result:empty {
+    display: none;
+}
+
+#checkin-status {
+    margin: 20px 0 0;
+    font-weight: 600;
+    color: #333;
+}
+
+#checkin-status:empty {
+    margin: 0;
+}
+
 #member-result.success {
     background: #e1f5e5;
     color: #17652a;
