@@ -557,6 +557,35 @@ header {
 .tag.yoga { background-color: var(--accent-yoga); }
 .tag.cardio { background-color: var(--accent-cardio); }
 
+.delete-workout-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.delete-workout-btn:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+
+.delete-workout-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .card-content {
   padding: 20px;
   display: flex;

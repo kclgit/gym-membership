@@ -73,30 +73,23 @@ if (saveWorkoutBtn) {
       return;
     }
 
+    if (typeof GymTrackCustomWorkouts === 'undefined') {
+      showToast('Workout storage is unavailable.', 'error');
+      return;
+    }
+
     const workoutGrid = document.querySelector('.workout-grid');
     if (!workoutGrid) return;
 
-    const newCard = document.createElement('div');
-    newCard.className = 'workout-card';
-    newCard.setAttribute('data-category', typeInput);
-    newCard.setAttribute('data-exercises', JSON.stringify(customExercises));
+    // Save first so the card survives a reload.
+    const savedWorkout = GymTrackCustomWorkouts.save({
+      name: nameInput,
+      type: typeInput,
+      duration: durationInput,
+      exercises: customExercises
+    });
 
-    const imgUrl = `Images/${typeInput}.jpg`;
-
-    newCard.innerHTML = `
-      <div class="card-image" style="background-image: url('${imgUrl}');">
-        <span class="tag ${typeInput}">${escapeHtml(typeInput)}</span>
-      </div>
-      <div class="card-content">
-        <h3>${escapeHtml(nameInput)}</h3>
-        <div class="card-stats">
-          <span>⏱ ${escapeHtml(durationInput)} min</span>
-          <span>🔥 Custom</span>
-        </div>
-        <button class="start-btn">Start Workout</button>
-      </div>
-    `;
-
+    const newCard = GymTrackCustomWorkouts.createCard(savedWorkout);
     workoutGrid.prepend(newCard);
 
     // A category filter would hide the new card, so show everything again.
@@ -119,14 +112,4 @@ if (saveWorkoutBtn) {
 
     closeModal();
   });
-}
-
-// Escape user input before putting it into innerHTML
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }
