@@ -28,6 +28,9 @@
 
     <!-- Main Content -->
     <p id="title">TRACK YOUR PROGRESS</p>
+    <div class="progress-empty" id="progress-empty" hidden>
+        No workouts logged yet. Finish a session on the <a href="workout.html">Workouts</a> page and your stats will show up here.
+    </div>
     <main class="container">
 
         <!-- Top Stat Grid -->
@@ -39,11 +42,9 @@
                 <!-- Workout Done -->
                 <div class="card stat-card">
                     <div class="stat-label">Total Workout Done</div>
-                    <div class="stat-value">150 Workouts</div>
+                    <div class="stat-value"><span class="stat-number" id="stat-workouts">0</span> <span class="stat-unit">Workouts</span></div>
                     <div class="stat-trend">
-                        <span class="trend-up">
-                            ⬆ 10%
-                        </span>
+                        <span class="trend-up" id="trend-workouts">—</span>
                         <span class="trend-text">vs last month</span>
                     </div>
                 </div>
@@ -52,18 +53,16 @@
                 <div class="card stat-card calories-card">
                     <div class="calories-info">
                         <div class="stat-label">Calories Burned</div>
-                        <div class="stat-value">300/750 <span>Cal</span></div>
+                        <div class="stat-value"><span class="stat-number" id="stat-calories">0</span><span class="stat-unit">/750 Cal</span></div>
                         <div class="stat-trend">
-                            <span class="trend-up">
-                                ⬆ 15%
-                            </span>
-                            <span class="trend-text">vs last month</span>
+                            <span class="trend-up" id="trend-calories">—</span>
+                            <span class="trend-text">vs last week</span>
                         </div>
                     </div>
                     <div class="progress-ring-container">
                         <svg class="progress-ring" viewBox="0 0 36 36">
                             <circle class="bg" cx="18" cy="18" r="15.9155"></circle>
-                            <circle class="progress" cx="18" cy="18" r="15.9155"></circle>
+                            <circle class="progress" id="ring-progress" cx="18" cy="18" r="15.9155"></circle>
                         </svg>
                         <div class="progress-icon">🔥</div>
                     </div>
@@ -75,42 +74,13 @@
                 <div class="streak-header">
                     <div>
                         <div class="stat-label">Current Streak</div>
-                        <div class="streak-value">23 Days</div>
+                        <div class="streak-value" id="streak-value">0 Days</div>
                     </div>
                     <span class="streak-icon">🔥</span>
                 </div>
                 <div class="streak-days">
                     <span class="streak-label">This week</span>
-                    <div class="days-grid">
-                        <div class="day-item">
-                            <div class="day-circle done">✓</div>
-                            <span class="day-name">Mon</span>
-                        </div>
-                        <div class="day-item">
-                            <div class="day-circle done">✓</div>
-                            <span class="day-name">Tue</span>
-                        </div>
-                        <div class="day-item">
-                            <div class="day-circle done">✓</div>
-                            <span class="day-name">Wed</span>
-                        </div>
-                        <div class="day-item">
-                            <div class="day-circle missed">✕</div>
-                            <span class="day-name">Thu</span>
-                        </div>
-                        <div class="day-item">
-                            <div class="day-circle missed">✕</div>
-                            <span class="day-name">Fri</span>
-                        </div>
-                        <div class="day-item">
-                            <div class="day-circle missed">✕</div>
-                            <span class="day-name">Sat</span>
-                        </div>
-                        <div class="day-item">
-                            <div class="day-circle done">✓</div>
-                            <span class="day-name">Sun</span>
-                        </div>
-                    </div>
+                    <div class="days-grid" id="streak-days"></div>
                 </div>
             </div>
         </div>
@@ -132,6 +102,25 @@
                 </div>
             </div>
             <div class="chart-bars" id="weight-chart"></div>
+        </div>
+
+        <!-- Weekly Activity Chart -->
+        <div class="card chart-card">
+            <div class="chart-header">
+                <div>
+                    <h2 class="chart-title">Weekly Activity</h2>
+                    <div class="chart-summary" id="activity-summary"></div>
+                </div>
+                <div class="chart-select-wrapper">
+                    <select class="chart-select" id="chart-range">
+                        <option value="7">Last 7 Days</option>
+                        <option value="14">Last 14 Days</option>
+                        <option value="30">Last 30 Days</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                </div>
+            </div>
+            <div class="chart-bars" id="activity-chart"></div>
         </div>
 
            <!-- Popular Workout Routines -->
@@ -215,7 +204,9 @@
   <script src="js/nav.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/loading.js"></script>
+  <script src="js/sessions.js"></script>
   <script src="js/progress.js"></script>
+  <script src="js/progress-stats.js"></script>
 
 </body>
 </html>

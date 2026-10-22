@@ -245,6 +245,16 @@ header {
     color: white;
 }
 
+.stat-value .stat-number {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.stat-value .stat-unit {
+    font-size: 18px;
+    font-weight: 400;
+}
+
 .stat-trend {
     display: flex;
     align-items: center;
@@ -260,6 +270,11 @@ header {
 .trend-text {
     color: white;
     margin-left: 8px;
+}
+
+.stat-trend .trend-down {
+    color: #ff6b6b;
+    font-weight: 500;
 }
 
 /* --- Calories Card Specifics --- */
@@ -299,6 +314,7 @@ header {
     stroke: #3b82f6;
     stroke-dasharray: 40, 100;
     stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s ease;
 }
 
 .progress-icon {
@@ -736,6 +752,23 @@ header {
     .routines-grid {
         grid-template-columns: 1fr 1fr 1fr;
     }
+}
+
+/* --- Live dashboard values --- */
+.progress-empty {
+    max-width: 900px;
+    margin: 0 auto 16px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.85);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+.progress-empty a {
+    color: #f5b301;
+    font-weight: 700;
 }
 
 @keyframes fade-up {
