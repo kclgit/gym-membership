@@ -1,26 +1,6 @@
 // Workout library: details modal, countdown timer, and exercise suggestions
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Plan data. The backend has no workout-plans endpoint yet, so this stays local.
-  const workoutData = {
-    strength: {
-      title: 'Full Body Power',
-      exercises: ['3x10 Barbell Squats', '3x8 Bench Press', '3x10 Deadlifts', '3x12 Dumbbell Lunges']
-    },
-    hiit: {
-      title: 'Morning Sweat',
-      exercises: ['45 sec Burpees', '45 sec Mountain Climbers', '45 sec Jumping Jacks', '45 sec High Knees']
-    },
-    yoga: {
-      title: 'Deep Stretch & Flow',
-      exercises: ['5 mins Childs Pose', '10 mins Downward Dog', '5 mins Cobra Pose', '5 mins Savasana']
-    },
-    cardio: {
-      title: 'Treadmill Intervals',
-      exercises: ['5 mins Warmup Walk', '1 min Sprint / 2 min Jog (Repeat 5x)', '5 mins Cooldown Walk']
-    }
-  };
-
   // DOM elements
   const detailsModal = document.getElementById('details-modal');
   const detailsTitle = document.getElementById('details-title');
@@ -77,25 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = startBtn.closest('.workout-card');
     if (!card) return;
 
-    const category = card.getAttribute('data-category');
-    const data = card.hasAttribute('data-custom') ? null : workoutData[category];
-
-    // Always trust the card's own title; the map only supplies built-in exercises.
+    // Every card carries its own routine, so custom and built-in share one path.
     const titleToDisplay = card.querySelector('h3').innerText;
     let exercisesToDisplay = [];
 
-    if (data) {
-      exercisesToDisplay = data.exercises;
-    } else {
-      try {
-        exercisesToDisplay = JSON.parse(card.getAttribute('data-exercises') || '[]');
-      } catch (err) {
-        exercisesToDisplay = [];
-      }
+    try {
+      exercisesToDisplay = JSON.parse(card.getAttribute('data-exercises') || '[]');
+    } catch (err) {
+      exercisesToDisplay = [];
     }
 
     if (!exercisesToDisplay.length) {
-      exercisesToDisplay = ['Do your custom exercises!'];
+      exercisesToDisplay = ['No exercises listed yet.'];
     }
 
     currentWorkout = {
