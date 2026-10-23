@@ -5,6 +5,7 @@
 
   const CALORIES_PER_MIN = 8;
   const WEEKLY_CALORIE_GOAL = 750;
+  const RECENT_LIMIT = 5;
   const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   // ?demo=1 fills the page with sample history for a quick preview.
@@ -204,6 +205,80 @@
     ring.style.strokeDashoffset = String(100 - percent);
   }
 
+  function formatRecentDate(date) {
+    if (Number.isNaN(date.getTime())) return 'Unknown date';
+
+    const days = Math.round((startOfDay(new Date()) - startOfDay(date)) / 86400000);
+    if (days <= 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return `${days} days ago`;
+
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  function formatDuration(seconds) {
+    const minutes = Math.max(1, Math.round(seconds / 60));
+    if (minutes < 60) return `${minutes} min`;
+
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+    return rest ? `${hours}h ${rest}m` : `${hours}h`;
+  }
+
+  function renderRecent(sessions) {
+    const list = document.getElementById('recent-list');
+    if (!list) return;
+
+    const summary = document.getElementById('recent-summary');
+    const empty = document.getElementById('recent-empty');
+
+    const recent = sessions
+      .slice()
+      .sort((a, b) => String(b.finishedAt).localeCompare(String(a.finishedAt)))
+      .slice(0, RECENT_LIMIT);
+
+    list.innerHTML = '';
+
+    recent.forEach((session) => {
+      const date = new Date(session.finishedAt);
+
+      const item = document.createElement('li');
+      item.className = 'recent-item';
+
+      const icon = document.createElement('span');
+      icon.className = 'recent-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = '🏋️';
+
+      const info = document.createElement('div');
+      info.className = 'recent-info';
+
+      const name = document.createElement('span');
+      name.className = 'recent-name';
+      name.textContent = session.name;
+
+      const when = document.createElement('span');
+      when.className = 'recent-when';
+      when.textContent = `${formatRecentDate(date)} · ${formatDuration(session.durationSeconds)}`;
+
+      const calories = document.createElement('span');
+      calories.className = 'recent-cal';
+      calories.textContent = `${Math.round((session.durationSeconds / 60) * CALORIES_PER_MIN)} kcal`;
+
+      info.append(name, when);
+      item.append(icon, info, calories);
+      list.appendChild(item);
+    });
+
+    if (summary) {
+      summary.textContent = recent.length
+        ? `Last ${recent.length} workout${recent.length === 1 ? '' : 's'}`
+        : '';
+    }
+
+    if (empty) empty.hidden = recent.length > 0;
+  }
+
   function render() {
     const sessions = store.read();
     const now = new Date();
@@ -255,6 +330,7 @@
     }
 
     renderStreakDays(daySet);
+    renderRecent(sessions);
 
     const rangeSelect = document.getElementById('chart-range');
     updateChart(Number(rangeSelect && rangeSelect.value) || 7);
