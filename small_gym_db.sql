@@ -8,6 +8,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS personal_records;
 DROP TABLE IF EXISTS workout_logs;
+DROP TABLE IF EXISTS workout_sessions;
 DROP TABLE IF EXISTS workout_plan_exercises;
 DROP TABLE IF EXISTS workout_plans;
 DROP TABLE IF EXISTS check_ins;
@@ -37,8 +38,23 @@ CREATE TABLE members (
     starting_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
     membership_type_id INT NOT NULL,
+    offline_id VARCHAR(100) NULL UNIQUE,
     FOREIGN KEY (membership_type_id)
         REFERENCES membership_types(membership_type_id)
+);
+
+-- 2b. Workout sessions started from the Workouts page
+CREATE TABLE workout_sessions (
+    session_id INT AUTO_INCREMENT PRIMARY KEY,
+    member_id INT NOT NULL,
+    workout_name VARCHAR(150) NOT NULL,
+    started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    finished_at DATETIME NULL,
+    duration_seconds INT NULL,
+    status ENUM('in_progress', 'completed') NOT NULL DEFAULT 'in_progress',
+    FOREIGN KEY (member_id)
+        REFERENCES members(member_id)
+        ON DELETE CASCADE
 );
 
 -- 3. Payments
@@ -164,7 +180,8 @@ VALUES
 ('Mark Mendoza', 'Valenzuela City', '09501234567', '09511234567', '2026-08-01', '2026-10-30', 2),
 ('Sofia Cruz', 'Meycauayan, Bulacan', '09601234567', '09611234567', '2026-06-01', '2027-05-31', 4),
 ('Daniel Flores', 'Obando, Bulacan', '09701234567', '09711234567', '2026-09-10', '2026-10-10', 1),
-('Patricia Ramos', 'Marilao, Bulacan', '09801234567', '09811234567', '2026-08-20', '2026-11-18', 2);
+('Patricia Ramos', 'Marilao, Bulacan', '09801234567', '09811234567', '2026-08-20', '2026-11-18', 2),
+('GymTrack Demo', 'Demo Account', '09170000009', '09180000009', '2026-10-01', '2026-11-01', 1);
 
 -- Trainers
 INSERT INTO trainers (name, contact_no, specialization) VALUES
