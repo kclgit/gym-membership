@@ -28,7 +28,6 @@ const APP_FILES = [
   "./js/progress-stats.js",
   "./js/offline.js",
   "./js/offline-db.js",
-  "./styles/offline.css",
 
   // CSS
   "./styles/style.css",
