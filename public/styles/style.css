@@ -1,11 +1,20 @@
 html {
+    min-height: 100%;
     scroll-behavior: smooth;
 }
-html, body {
+
+body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
     width: 100%;
-    overflow-x: hidden;
+
+    background-image: url("../Images/GymImage.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
     background-color: black;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -13,7 +22,6 @@ html, body {
 *, *::before, *::after {
     box-sizing: border-box;
 }
-
 
 /* NAVIGATION BAR SECTION */
 header {
@@ -160,9 +168,7 @@ header {
     align-items: center;
     height: 870px;
     width: 100%;
-    background-color: grey;
     overflow: hidden;
-    background-image: url(../Images/GymImage.jpg);
     position: relative;
 }
 
@@ -184,16 +190,6 @@ header {
     position: relative;
 }
 
-#home::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(10, 10, 10, 0), rgba(0, 0, 0, 0.158));
-  pointer-events: none;
-  z-index: 1;
-  filter: blur(16px);
-}
-
 @keyframes fade-up {
     0% {
         opacity: 0;
@@ -202,12 +198,6 @@ header {
     100% {
         opacity: 1;
         transform: translateY(0px) scale(1);
-    }
-}
-
-@media (max-width: 768px) {
-    #home {
-        background-attachment: scroll;
     }
 }
 
@@ -220,47 +210,102 @@ header {
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 700px;
+
+    min-height: 700px;
     width: 100%;
+    padding: 40px 16px;
     overflow: hidden;
-    background-color: black;
+    background-color: transparent;
 }
 
 #check-in-container {
-    width: clamp(600px, 28vw, 800px);
-    border-radius: 20px;
-    padding: 30px;
-    margin: 20px;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(30, 30, 30, 0.8);
+    text-align: center;
+
+    width: min(100%, 800px);
+    padding: clamp(16px, 3vw, 30px);
+    margin: 20px 0;
+
+    background-color: rgba(30, 30, 30, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.657);
+    border-radius: 20px;
     box-shadow: 0 0 15px 5px rgb(200, 200, 200);
 }
 
 #check-in h1 {
-    font-size: clamp(24px, 2.917vw, 56px);;
+    width: 100%;
+    margin: 0 0 12px;
     color: white;
-    white-space: nowrap;
-    overflow: hidden;
+    font-size: clamp(22px, 3vw, 56px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
 }
 
-#check-in p {
-    font-size: clamp(18px, 1.458vw, 36px);
+#check-in-container > p {
+    max-width: 100%;
+    margin: 0 0 24px;
+    padding: 0;
     color: white;
-    padding-bottom: 20px;
-}
-
-#check-in img {
-    height: 300px;
-    width: 300px;
+    font-size: clamp(14px, 1.5vw, 22px);
+    line-height: 1.5;
 }
 
 #check-in-border {
-    border: black;
-    max-width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 300px;
+    height: 300px;
+    max-width: 100%;
+    padding: 10px;
+
+    background-color: white;
+    border: 1px solid black;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px 2px rgb(148, 148, 148);
+    box-shadow: 0 0 10px 2px rgb(148, 148, 148);
+}
+
+/* QR CODE CONTAINER */
+#gym-qr-code {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+}
+
+/* GENERATED QR CODE */
+#gym-qr-code canvas,
+#gym-qr-code img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* CHECK-IN STATUS */
+#checkin-status,
+#member-result {
+    width: min(100%, 500px);
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+#checkin-status {
+    margin: 20px 0 0;
+    font-weight: 600;
+    color: white;
+}
+
+#checkin-status:empty {
+    margin: 0;
 }
 
 #member-result {
@@ -268,21 +313,11 @@ header {
     padding: 14px;
     border-radius: 6px;
     background: #eee;
-    overflow-wrap: anywhere;
+    color: #222;
 }
 
 #member-result:empty {
     display: none;
-}
-
-#checkin-status {
-    margin: 20px 0 0;
-    font-weight: 600;
-    color: #333;
-}
-
-#checkin-status:empty {
-    margin: 0;
 }
 
 #member-result.success {
@@ -295,25 +330,33 @@ header {
     color: #9b1515;
 }
 
-/* MEMBERSHIP SECTION  */
+/* MEMBERSHIP SECTION */
 #membership-container {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    text-align: center;
     align-items: center;
-    height: 500px;
+    text-align: center;
+    min-height: 500px;
     width: 100%;
-    background-color: black;
-    flex-direction: row-reverse;
+    padding: 40px 20px;
 }
 
 #membership-text {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     text-align: center;
-    margin: 30px;
+
+    width: clamp(600px, 28vw, 800px);
+    max-width: 100%;
+    padding: 30px;
+    margin: 20px;
+
+    background-color: rgba(30, 30, 30, 0.505);
+    border: 1px solid rgba(255, 255, 255, 0.657);
+    border-radius: 20px;
+    box-shadow: 0 0 15px 5px rgb(200, 200, 200);
 }
 
 #membership-container h1 {
@@ -321,14 +364,30 @@ header {
     font-size: clamp(22px, 2.917vw, 56px);
     font-weight: bold;
     padding: 10px;
-    white-space: nowrap;
     text-align: center;
+    overflow-wrap: anywhere;
 }
 
 #membership-container p {
     color: white;
     font-size: clamp(16px, 1.458vw, 36px);
     text-align: center;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 200px;
+    max-width: 100%;
+    min-height: 50px;
+    padding: 10px;
+    margin: 20px auto 0;
+
+    background-color: white;
+    border-radius: 10px;
+    white-space: nowrap;
 }
 
 .button a {
@@ -338,20 +397,77 @@ header {
     font-size: clamp(14px, 1.2vw, 20px);
 }
 
-.button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 200px;
-    height: 50px;
-    padding: 10px;
-    margin: 20px auto 0;
-    background-color: white;
-    border-radius: 10px;
-    white-space: nowrap;
-}
-
 .button:hover {
     background-color: rgb(118, 118, 118);
     cursor: pointer;
+}
+
+/* TABLETS */
+@media (max-width: 768px) {
+    #home {
+        background-attachment: scroll;
+    }
+
+    #check-in {
+        min-height: auto;
+        padding: 100px 20px 50px;
+    }
+
+    #check-in-container {
+        width: 100%;
+        max-width: 500px;
+        padding: 24px 20px;
+        margin: 0;
+    }
+
+    #check-in-border {
+        width: 260px;
+        height: 260px;
+    }
+}
+
+@media (max-width: 640px) {
+    #membership-container {
+        padding: 30px 15px;
+    }
+
+    #membership-text {
+        width: 100%;
+        margin: 10px 0;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #check-in {
+        padding: 90px 14px 40px;
+    }
+
+    #check-in-container {
+        padding: 22px 14px;
+        border-radius: 16px;
+        box-shadow: 0 0 10px 2px rgb(200, 200, 200);
+    }
+
+    #check-in h1 {
+        font-size: clamp(20px, 6vw, 28px);
+        white-space: normal;
+    }
+
+    #check-in-container > p {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    #check-in-border {
+        width: min(220px, 100%);
+        height: auto;
+        aspect-ratio: 1 / 1;
+        padding: 8px;
+    }
+
+    #checkin-status,
+    #member-result {
+        font-size: 14px;
+    }
 }
