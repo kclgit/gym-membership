@@ -189,7 +189,11 @@
       <h2>Workout in Progress</h2>
       <p id="timer-workout-name">Workout</p>
       <div class="timer-display" id="timer-display">00:00</div>
-      <button type="button" class="btn-cancel" id="finish-timer-btn">Finish Now</button>
+      <p class="timer-status" id="timer-status" role="status" aria-live="polite" hidden>Resting — timer paused</p>
+      <div class="timer-actions">
+        <button type="button" class="btn-cancel" id="pause-timer-btn" aria-pressed="false">Pause</button>
+        <button type="button" class="btn-cancel" id="finish-timer-btn">Finish Now</button>
+      </div>
     </div>
   </div>
 

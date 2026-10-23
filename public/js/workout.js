@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const timerDisplay = document.getElementById('timer-display');
   const timerName = document.getElementById('timer-workout-name');
   const finishTimerBtn = document.getElementById('finish-timer-btn');
+  const pauseTimerBtn = document.getElementById('pause-timer-btn');
+  const timerStatus = document.getElementById('timer-status');
 
   // The workout currently shown in the details modal
   let currentWorkout = { title: 'Workout', minutes: 30 };
@@ -147,7 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
       }
 
-      return data;
+      return {
+        title: String(data.title || 'Workout'),
+        minutes: data.minutes,
+        startedAt: data.startedAt,
+        paused: !!data.paused,
+        pausedAt: Number.isFinite(data.pausedAt) ? data.pausedAt : 0,
+        pausedMs: Number.isFinite(data.pausedMs) ? data.pausedMs : 0
+      };
     } catch (err) {
       return null;
     }
@@ -161,12 +170,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Time the timer actually ran, so rest breaks do not count.
+  function activeElapsedMs(timer, now) {
+    const resting = timer.paused && timer.pausedAt ? now - timer.pausedAt : 0;
+    return Math.max(0, now - timer.startedAt - (timer.pausedMs || 0) - resting);
+  }
+
   // Run the countdown for the selected workout, then show the success popup
   function startTimer(minutes, title) {
     if (!timerOverlay || !timerDisplay) return;
 
-    const startedAt = Date.now();
-    saveActiveTimer({ title, minutes, startedAt });
+    const timer = {
+      title,
+      minutes,
+      startedAt: Date.now(),
+      paused: false,
+      pausedAt: 0,
+      pausedMs: 0
+    };
+
+    saveActiveTimer(timer);
 
     // Log the session start to the backend (best effort)
     const sessionPromise = api
@@ -177,27 +200,62 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
       });
 
-    runTimer({ title, minutes, startedAt, sessionPromise });
+    runTimer({ ...timer, sessionPromise });
   }
 
   // Shared by a fresh start and a timer restored after a reload.
-  function runTimer({ title, minutes, startedAt, sessionPromise }) {
+  function runTimer({ title, minutes, startedAt, paused, pausedAt, pausedMs, sessionPromise }) {
     if (!timerOverlay || !timerDisplay) return;
 
     const totalSeconds = Math.max(1, Math.round(minutes * 60));
-    let remaining = totalSeconds - Math.floor((Date.now() - startedAt) / 1000);
+    let isPaused = !!paused;
+    let pauseStartedAt = pausedAt || 0;
+    let pausedTotalMs = pausedMs || 0;
 
-    if (remaining <= 0) {
+    function elapsedMs() {
+      return activeElapsedMs({
+        startedAt,
+        paused: isPaused,
+        pausedAt: pauseStartedAt,
+        pausedMs: pausedTotalMs
+      }, Date.now());
+    }
+
+    function remainingSeconds() {
+      return Math.max(0, totalSeconds - Math.floor(elapsedMs() / 1000));
+    }
+
+    if (remainingSeconds() <= 0) {
       clearActiveTimer();
       return;
     }
 
     if (timerName) timerName.textContent = title;
 
+    function persist() {
+      saveActiveTimer({
+        title,
+        minutes,
+        startedAt,
+        paused: isPaused,
+        pausedAt: pauseStartedAt,
+        pausedMs: pausedTotalMs
+      });
+    }
+
     function render() {
+      const remaining = remainingSeconds();
       const m = String(Math.floor(remaining / 60)).padStart(2, '0');
       const s = String(remaining % 60).padStart(2, '0');
       timerDisplay.textContent = `${m}:${s}`;
+      timerDisplay.classList.toggle('paused', isPaused);
+
+      if (timerStatus) timerStatus.hidden = !isPaused;
+
+      if (pauseTimerBtn) {
+        pauseTimerBtn.textContent = isPaused ? 'Resume' : 'Pause';
+        pauseTimerBtn.setAttribute('aria-pressed', String(isPaused));
+      }
     }
 
     function stop() {
@@ -208,14 +266,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let finished = false;
 
+    // Pause counts as rest time, so it is not added to the session.
+    function togglePause() {
+      if (finished) return;
+
+      if (isPaused) {
+        pausedTotalMs += Date.now() - pauseStartedAt;
+        pauseStartedAt = 0;
+        isPaused = false;
+      } else {
+        isPaused = true;
+        pauseStartedAt = Date.now();
+      }
+
+      persist();
+      render();
+    }
+
     async function finish() {
       if (finished) return;
       finished = true;
+
+      const durationSeconds = Math.max(0, Math.round(elapsedMs() / 1000));
+
       clearActiveTimer();
       stop();
 
       const sessionId = await sessionPromise;
-      const durationSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
       const tooShort = durationSeconds < MIN_SESSION_SECONDS;
 
       // Keep a local copy so the Progress page can show this session.
@@ -242,10 +319,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Derive the time from the clock so background tabs don't drift.
     function tick() {
-      remaining = totalSeconds - Math.floor((Date.now() - startedAt) / 1000);
+      if (isPaused) {
+        render();
+        return;
+      }
 
-      if (remaining <= 0) {
-        remaining = 0;
+      if (remainingSeconds() <= 0) {
         render();
         finish();
       } else {
@@ -257,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
     render();
     timerOverlay.classList.add('active');
 
+    if (pauseTimerBtn) pauseTimerBtn.onclick = togglePause;
     if (finishTimerBtn) finishTimerBtn.onclick = finish;
 
     timerInterval = setInterval(tick, 1000);
@@ -288,18 +368,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const active = readActiveTimer();
 
     if (active) {
-      const elapsed = Math.floor((Date.now() - active.startedAt) / 1000);
+      const elapsed = Math.floor(activeElapsedMs(active, Date.now()) / 1000);
 
       if (elapsed < active.minutes * 60) {
-        runTimer({
-          title: active.title || 'Workout',
-          minutes: active.minutes,
-          startedAt: active.startedAt,
-          sessionPromise: Promise.resolve(null)
-        });
+        runTimer({ ...active, sessionPromise: Promise.resolve(null) });
 
         if (typeof showToast === 'function') {
-          showToast('Resumed your workout');
+          showToast(active.paused ? 'Resumed your rest break' : 'Resumed your workout');
         }
       } else {
         // Finished while the page was closed; do not invent a session.

@@ -908,6 +908,23 @@ header {
   margin-bottom: 20px;
 }
 
+.timer-display.paused {
+  color: #9aa0a6;
+}
+
+.timer-status {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.timer-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
 .filter-input {
   display: none;
 }
