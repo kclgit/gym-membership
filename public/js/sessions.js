@@ -4,7 +4,12 @@
   const KEY = 'gymtrack:sessions';
   const MAX_SESSIONS = 300;
 
+  // ?demo=1 swaps in sample data for this page load without touching storage.
+  let demoList = null;
+
   function read() {
+    if (demoList) return demoList.slice();
+
     try {
       const raw = localStorage.getItem(KEY);
       const list = raw ? JSON.parse(raw) : [];
@@ -15,6 +20,11 @@
   }
 
   function write(list) {
+    if (demoList) {
+      demoList = list.slice(-MAX_SESSIONS);
+      return;
+    }
+
     try {
       localStorage.setItem(KEY, JSON.stringify(list.slice(-MAX_SESSIONS)));
     } catch (err) {
@@ -69,7 +79,7 @@
       };
     }).sort((a, b) => a.finishedAt.localeCompare(b.finishedAt));
 
-    write(list);
+    demoList = list;
     return list;
   }
 

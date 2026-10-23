@@ -4,7 +4,12 @@
   const KEY = 'gymtrack:weights';
   const MAX_ENTRIES = 500;
 
+  // ?demo=1 swaps in sample data for this page load without touching storage.
+  let demoList = null;
+
   function read() {
+    if (demoList) return demoList.slice();
+
     try {
       const raw = localStorage.getItem(KEY);
       const list = raw ? JSON.parse(raw) : [];
@@ -15,6 +20,11 @@
   }
 
   function write(list) {
+    if (demoList) {
+      demoList = list.slice(-MAX_ENTRIES);
+      return;
+    }
+
     try {
       localStorage.setItem(KEY, JSON.stringify(list.slice(-MAX_ENTRIES)));
     } catch (err) {
@@ -56,7 +66,7 @@
       };
     });
 
-    write(list);
+    demoList = list;
     return list;
   }
 
