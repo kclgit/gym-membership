@@ -57,20 +57,45 @@ document.addEventListener('DOMContentLoaded', () => {
     return 30;
   }
 
-  // Load exercise suggestions from the backend for the custom workout form
+  // Show the built-in catalog immediately, then merge the backend exercises.
   async function loadExercises() {
     if (!exerciseOptions) return;
 
+    const names = new Map();
+
+    function addName(name) {
+      const clean = String(name || '').trim();
+      if (!clean) return;
+
+      const key = clean.toLowerCase();
+      if (!names.has(key)) names.set(key, clean);
+    }
+
+    function renderOptions() {
+      exerciseOptions.innerHTML = '';
+
+      Array.from(names.values())
+        .sort((a, b) => a.localeCompare(b))
+        .forEach((name) => {
+          const option = document.createElement('option');
+          option.value = name;
+          exerciseOptions.appendChild(option);
+        });
+    }
+
+    const catalog = Array.isArray(window.GymTrackExerciseCatalog)
+      ? window.GymTrackExerciseCatalog
+      : [];
+
+    catalog.forEach(addName);
+    renderOptions();
+
     try {
       const res = await api.get('exercises.php');
-      exerciseOptions.innerHTML = '';
-      (res.data || []).forEach((exercise) => {
-        const option = document.createElement('option');
-        option.value = exercise.exercise_name;
-        exerciseOptions.appendChild(option);
-      });
+      (res.data || []).forEach((exercise) => addName(exercise.exercise_name));
+      renderOptions();
     } catch (err) {
-      // The form still works with free-text input, so just warn
+      // Keep the built-in catalog; free-text input still works.
       console.warn('Could not load exercises:', err.message);
     }
   }

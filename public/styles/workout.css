@@ -364,6 +364,14 @@ header {
   gap: 10px;
 }
 
+.exercise-hint {
+  margin: -4px 0 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-gray);
+  font-weight: 400;
+}
+
 .exercise-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 64px 64px 44px;

@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "gymtrack-v4";
+const CACHE_NAME = "gymtrack-v5";
 
 const APP_FILES = [
   "./",
@@ -14,6 +14,7 @@ const APP_FILES = [
   // JavaScript
   "./js/app.js",
   "./js/api.js",
+  "./js/exercise-catalog.js",
   "./js/exercises.js",
   "./js/workout.js",
   "./js/nav.js",
