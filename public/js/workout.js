@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pauseTimerBtn = document.getElementById('pause-timer-btn');
   const minimizeTimerBtn = document.getElementById('minimize-timer-btn');
   const timerStatus = document.getElementById('timer-status');
+  const restSelect = document.getElementById('rest-duration');
 
   // The workout currently shown in the details modal
   let currentWorkout = { title: 'Workout', minutes: 30 };
@@ -157,7 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         paused: !!data.paused,
         pausedAt: Number.isFinite(data.pausedAt) ? data.pausedAt : 0,
         pausedMs: Number.isFinite(data.pausedMs) ? data.pausedMs : 0,
-        minimized: !!data.minimized
+        minimized: !!data.minimized,
+        restSeconds: Number.isFinite(data.restSeconds) ? data.restSeconds : 90,
+        restEndsAt: Number.isFinite(data.restEndsAt) ? data.restEndsAt : 0
       };
     } catch (err) {
       return null;
@@ -189,7 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
       paused: false,
       pausedAt: 0,
       pausedMs: 0,
-      minimized: false
+      minimized: false,
+      restSeconds: restSelect ? Number(restSelect.value) : 90,
+      restEndsAt: 0
     };
 
     saveActiveTimer(timer);
@@ -207,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Shared by a fresh start and a timer restored after a reload.
-  function runTimer({ title, minutes, startedAt, paused, pausedAt, pausedMs, minimized, sessionPromise }) {
+  function runTimer({ title, minutes, startedAt, paused, pausedAt, pausedMs, minimized, restSeconds, restEndsAt, sessionPromise }) {
     if (!timerOverlay || !timerDisplay) return;
 
     const totalSeconds = Math.max(1, Math.round(minutes * 60));
@@ -215,6 +220,56 @@ document.addEventListener('DOMContentLoaded', () => {
     let pauseStartedAt = pausedAt || 0;
     let pausedTotalMs = pausedMs || 0;
     let isMinimized = !!minimized;
+    let restTotalSeconds = Number.isFinite(restSeconds) && restSeconds >= 0 ? restSeconds : 90;
+    let restEndsAtTs = restEndsAt || 0;
+    let restAlerted = restEndsAtTs > 0 && restEndsAtTs <= Date.now();
+    let audioCtx = null;
+
+    function formatClock(total) {
+      const m = String(Math.floor(total / 60)).padStart(2, '0');
+      const s = String(total % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function restRemainingSeconds() {
+      return restEndsAtTs ? Math.max(0, Math.ceil((restEndsAtTs - Date.now()) / 1000)) : 0;
+    }
+
+    // Created on the pause click so the browser allows the beep later.
+    function unlockAudio() {
+      try {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtor) return;
+        if (!audioCtx) audioCtx = new AudioCtor();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+      } catch (err) {
+        // Audio is optional.
+      }
+    }
+
+    function playRestBeep() {
+      try {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtor) return;
+        if (!audioCtx) audioCtx = new AudioCtor();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.2, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start();
+        osc.stop(now + 0.45);
+      } catch (err) {
+        // Audio is optional.
+      }
+    }
 
     function elapsedMs() {
       return activeElapsedMs({
@@ -236,6 +291,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (timerName) timerName.textContent = title;
 
+    if (restSelect) {
+      const match = Array.from(restSelect.options)
+        .find((option) => Number(option.value) === restTotalSeconds);
+
+      restSelect.value = match ? match.value : '90';
+      restTotalSeconds = Number(restSelect.value);
+
+      restSelect.onchange = () => {
+        const next = Number(restSelect.value);
+        restTotalSeconds = Number.isFinite(next) && next >= 0 ? next : 0;
+
+        if (!isPaused) return;
+
+        restEndsAtTs = restTotalSeconds > 0 ? Date.now() + restTotalSeconds * 1000 : 0;
+        restAlerted = false;
+
+        if (restTotalSeconds > 0) unlockAudio();
+
+        persist();
+        render();
+      };
+    }
+
     function persist() {
       saveActiveTimer({
         title,
@@ -244,18 +322,26 @@ document.addEventListener('DOMContentLoaded', () => {
         paused: isPaused,
         pausedAt: pauseStartedAt,
         pausedMs: pausedTotalMs,
-        minimized: isMinimized
+        minimized: isMinimized,
+        restSeconds: restTotalSeconds,
+        restEndsAt: restEndsAtTs
       });
     }
 
     function render() {
-      const remaining = remainingSeconds();
-      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const s = String(remaining % 60).padStart(2, '0');
-      timerDisplay.textContent = `${m}:${s}`;
+      timerDisplay.textContent = formatClock(remainingSeconds());
       timerDisplay.classList.toggle('paused', isPaused);
 
-      if (timerStatus) timerStatus.hidden = !isPaused;
+      if (timerStatus) {
+        timerStatus.hidden = !isPaused;
+
+        if (isPaused) {
+          const restLeft = restRemainingSeconds();
+          timerStatus.textContent = restEndsAtTs
+            ? (restLeft > 0 ? `Resting — ${formatClock(restLeft)} left` : 'Rest over — resume when ready')
+            : 'Resting — timer paused';
+        }
+      }
 
       if (pauseTimerBtn) {
         pauseTimerBtn.textContent = isPaused ? 'Resume' : 'Pause';
@@ -294,9 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
         pausedTotalMs += Date.now() - pauseStartedAt;
         pauseStartedAt = 0;
         isPaused = false;
+        restEndsAtTs = 0;
+        restAlerted = false;
       } else {
         isPaused = true;
         pauseStartedAt = Date.now();
+
+        if (restTotalSeconds > 0) {
+          restEndsAtTs = Date.now() + restTotalSeconds * 1000;
+          restAlerted = false;
+          unlockAudio();
+        }
       }
 
       persist();
@@ -341,6 +435,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function tick() {
       if (isPaused) {
         render();
+
+        if (restEndsAtTs && !restAlerted && Date.now() >= restEndsAtTs) {
+          restAlerted = true;
+          playRestBeep();
+          render();
+        }
+
         return;
       }
 

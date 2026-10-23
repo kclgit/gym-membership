@@ -919,6 +919,27 @@ header {
   color: #0f766e;
 }
 
+.rest-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-gray);
+}
+
+.rest-picker select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  color: var(--text-dark);
+  font-family: inherit;
+  font-size: 13px;
+}
+
 .timer-actions {
   display: flex;
   flex-wrap: wrap;
@@ -957,6 +978,10 @@ header {
 .timer-overlay.minimized .timer-display {
   font-size: 30px;
   margin-bottom: 8px;
+}
+
+.timer-overlay.minimized .rest-picker {
+  display: none;
 }
 
 .timer-overlay.minimized .timer-actions {
