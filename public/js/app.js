@@ -11,15 +11,7 @@ if ("serviceWorker" in navigator) {
 
   window.addEventListener("load", async () => {
     try {
-      const registration =
-        await navigator.serviceWorker.register(
-          "./service-worker.js"
-        );
-
-      console.log(
-        "GymTrack service worker registered:",
-        registration.scope
-      );
+      await navigator.serviceWorker.register("./service-worker.js");
     } catch (error) {
       console.error(
         "GymTrack service worker registration failed:",

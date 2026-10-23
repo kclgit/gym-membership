@@ -96,9 +96,17 @@ function resetForm() {
   const type = document.getElementById('workoutType');
   const duration = document.getElementById('workoutDuration');
 
-  if (name) name.value = '';
+  if (name) {
+    name.value = '';
+    name.removeAttribute('aria-invalid');
+  }
+
   if (type) type.value = 'strength';
-  if (duration) duration.value = '';
+
+  if (duration) {
+    duration.value = '';
+    duration.removeAttribute('aria-invalid');
+  }
 
   setExerciseRows([]);
 }
@@ -112,9 +120,17 @@ function openEditModal(workout, trigger) {
   const type = document.getElementById('workoutType');
   const duration = document.getElementById('workoutDuration');
 
-  if (name) name.value = workout.name;
+  if (name) {
+    name.value = workout.name;
+    name.removeAttribute('aria-invalid');
+  }
+
   if (type) type.value = workout.type;
-  if (duration) duration.value = workout.duration;
+
+  if (duration) {
+    duration.value = workout.duration;
+    duration.removeAttribute('aria-invalid');
+  }
 
   setExerciseRows(Array.isArray(workout.exercises) ? workout.exercises : []);
 
@@ -124,22 +140,54 @@ function openEditModal(workout, trigger) {
   openModal(trigger);
 }
 
+function markInvalid(input, message) {
+  if (typeof showToast === 'function') showToast(message, 'error');
+  if (!input) return;
+
+  input.setAttribute('aria-invalid', 'true');
+  input.focus();
+  input.select();
+}
+
+['workoutName', 'workoutDuration'].forEach((id) => {
+  const input = document.getElementById(id);
+  if (input) input.addEventListener('input', () => input.removeAttribute('aria-invalid'));
+});
+
 if (saveWorkoutBtn) {
   saveWorkoutBtn.addEventListener('click', () => {
-    const nameInput = document.getElementById('workoutName').value.trim();
+    const nameField = document.getElementById('workoutName');
+    const durationField = document.getElementById('workoutDuration');
+    const nameInput = nameField.value.trim();
     const typeInput = document.getElementById('workoutType').value;
-    const durationInput = document.getElementById('workoutDuration').value || '30';
+    const rawDuration = durationField.value.trim();
+    const durationInput = rawDuration === '' ? 30 : Number(rawDuration);
 
     // Exercises come from exercises.js (single source of truth)
     const customExercises = typeof getExercises === 'function' ? getExercises() : [];
 
     if (nameInput === '') {
-      showToast('Please enter a workout name!', 'error');
+      markInvalid(nameField, 'Please enter a workout name!');
       return;
     }
 
     if (typeof GymTrackCustomWorkouts === 'undefined') {
       showToast('Workout storage is unavailable.', 'error');
+      return;
+    }
+
+    if (!Number.isFinite(durationInput) || durationInput < 1 || durationInput > 180) {
+      markInvalid(durationField, 'Duration must be between 1 and 180 minutes.');
+      return;
+    }
+
+    const duplicate = GymTrackCustomWorkouts.read().some((workout) =>
+      workout.id !== editingWorkoutId &&
+      String(workout.name || '').trim().toLowerCase() === nameInput.toLowerCase()
+    );
+
+    if (duplicate) {
+      markInvalid(nameField, 'A custom workout with that name already exists.');
       return;
     }
 

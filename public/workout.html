@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="white">
     <title>GymTrack</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel ="stylesheet" href = "styles/workout.css">
     <link rel="manifest" href="manifest.json">
 
@@ -127,7 +128,7 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="workoutName">Workout Name</label>
-          <input type="text" id="workoutName" placeholder="e.g., Leg Day Destroyer">
+          <input type="text" id="workoutName" placeholder="e.g., Leg Day Destroyer" maxlength="60">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -141,7 +142,7 @@
           </div>
           <div class="form-group">
             <label for="workoutDuration">Duration (minutes)</label>
-            <input type="number" id="workoutDuration" placeholder="45" min="1">
+            <input type="number" id="workoutDuration" placeholder="45" min="1" max="180">
           </div>
         </div>
         <div class="form-group">
