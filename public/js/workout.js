@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let timerInterval = null;
   let lastDetailsTrigger = null;
 
+  // Anything shorter is treated as an accidental start and not saved.
+  const MIN_SESSION_SECONDS = 60;
+
   // Pull the duration (in minutes) out of a card's stats, e.g. "⏱ 45 min"
   function getCardDuration(card) {
     const stats = card.querySelectorAll('.card-stats span');
@@ -163,9 +166,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const sessionId = await sessionPromise;
       const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
+      const tooShort = durationSeconds < MIN_SESSION_SECONDS;
 
       // Keep a local copy so the Progress page can show this session.
-      if (window.GymTrackSessions) {
+      // Sessions under a minute are not worth logging.
+      if (!tooShort && window.GymTrackSessions) {
         window.GymTrackSessions.saveSession({ name: title, durationSeconds });
       }
 
@@ -176,13 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
             session_id: sessionId,
             duration_seconds: durationSeconds
           });
-          showToast('Workout saved!');
         } catch (err) {
           showToast(err.message, 'error');
+          return;
         }
       }
 
-      showToast('Workout complete!');
+      showToast(tooShort ? 'Session under a minute was not saved.' : 'Workout saved!');
     }
 
     clearInterval(timerInterval);
