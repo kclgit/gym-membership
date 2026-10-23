@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "root";
+$password = "";
 $dbname = "small_gym_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
