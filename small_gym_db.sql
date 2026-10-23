@@ -100,7 +100,7 @@ CREATE TABLE workout_plan_exercises (
     plan_exercise_id INT AUTO_INCREMENT PRIMARY KEY,
     workout_plan_id INT NOT NULL,
     exercise_id INT NOT NULL,
-    sets INT NOT NULL,
+    `sets` INT NOT NULL,
     reps INT NOT NULL,
     FOREIGN KEY (workout_plan_id)
         REFERENCES workout_plans(workout_plan_id)
@@ -115,7 +115,7 @@ CREATE TABLE workout_logs (
     member_id INT NOT NULL,
     exercise_id INT NOT NULL,
     workout_date DATE NOT NULL,
-    sets INT NOT NULL,
+    `sets` INT NOT NULL,
     reps INT NOT NULL,
     previous_weight DECIMAL(6,2) DEFAULT 0,
     present_weight DECIMAL(6,2) DEFAULT 0,
@@ -233,7 +233,7 @@ VALUES
 
 -- Workout Plan Exercises
 INSERT INTO workout_plan_exercises
-(workout_plan_id, exercise_id, sets, reps)
+(workout_plan_id, exercise_id, `sets`, reps)
 VALUES
 (1, 1, 4, 10),
 (1, 4, 3, 10),
@@ -255,7 +255,7 @@ VALUES
 
 -- Daily Workout Logs
 INSERT INTO workout_logs
-(member_id, exercise_id, workout_date, sets, reps, previous_weight, present_weight, workout_time)
+(member_id, exercise_id, workout_date, `sets`, reps, previous_weight, present_weight, workout_time)
 VALUES
 (1, 1, '2026-10-01', 4, 10, 40.00, 45.00, 20),
 (1, 4, '2026-10-01', 3, 10, 20.00, 22.50, 15),
@@ -313,7 +313,7 @@ ORDER BY c.checkin_date DESC;
 
 -- View workout logs
 SELECT m.name, e.exercise_name, w.workout_date,
-       w.sets, w.reps, w.previous_weight,
+       w.`sets`, w.reps, w.previous_weight,
        w.present_weight, w.workout_time
 FROM workout_logs w
 JOIN members m ON w.member_id = m.member_id
