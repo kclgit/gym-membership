@@ -36,8 +36,8 @@ $offlineId = trim($input["offline_id"] ?? "");
 
 $allowedPlans = [
     "Promo" => 1,
-    "Regular" => 2,
-    "Premium" => 3
+    "Regular" => 1,
+    "Premium" => 1
 ];
 
 if (
@@ -101,17 +101,9 @@ if ($date < new DateTimeImmutable("today")) {
     ]);
 }
 
-// Calculate one calendar month, clamping the day when necessary.
-$nextMonth = $date->modify("first day of next month");
-$lastDay = (int) $nextMonth->format("t");
-$day = min((int) $date->format("d"), $lastDay);
-
-$expirationDate = $nextMonth
-    ->setDate(
-        (int) $nextMonth->format("Y"),
-        (int) $nextMonth->format("m"),
-        $day
-    )
+// All UI plans use the Monthly membership type (30 days).
+$expirationDate = $date
+    ->modify("+30 days")
     ->format("Y-m-d");
 
 $membershipTypeId = $allowedPlans[$membershipType];

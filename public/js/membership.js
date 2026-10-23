@@ -253,58 +253,69 @@ document.addEventListener("DOMContentLoaded", () => {
     let isSyncing = false;
 
     async function syncMemberships() {
-        if (!navigator.onLine || isSyncing) return;
+    if (!navigator.onLine || isSyncing) return;
 
-        isSyncing = true;
+    isSyncing = true;
 
-        try {
-            const pending = await getPendingMemberships();
+    try {
+        const pending = await getPendingMemberships();
 
-            for (const membership of pending) {
-                // Stop if the connection disappears.
-                if (!navigator.onLine) break;
+        for (const membership of pending) {
+            if (!navigator.onLine) break;
 
-                try {
-                    const result = await api.post(
-                        "create_membership.php",
-                        membership
-                    );
-
-                    if (result && result.success === false) {
-                        console.error(
-                            "Membership rejected by server:",
-                            membership.offline_id,
-                            result.message
-                        );
-
-                        continue;
-                    }
-
-                    await removePendingMembership(
-                        membership.offline_id
-                    );
-
-                    console.log(
-                        "Membership synchronized:",
-                        membership.offline_id
-                    );
-                } catch (error) {
-                    console.error(
-                        "Membership sync failed; record remains queued:",
-                        membership.offline_id,
-                        error
-                    );
-
-                    break;
-                }
+            if (!membership.offline_id) {
+                console.error(
+                    "Cannot sync membership: missing offline_id.",
+                    membership
+                );
+                continue;
             }
-        } catch (error) {
-            console.error("Could not synchronize memberships:", error);
-        } finally {
-            isSyncing = false;
-            await updatePendingCount();
+
+            try {
+                const result = await api.post(
+                    "create_membership.php",
+                    membership
+                );
+
+                // Only accept an explicit server confirmation.
+                if (
+                    !result ||
+                    result.success !== true ||
+                    !Number.isFinite(Number(result.member_id)) ||
+                    Number(result.member_id) <= 0
+                ) {
+                    throw new Error(
+                        "Server did not confirm the membership was saved."
+                    );
+                }
+
+                // Remove the queued record only after confirmed success.
+                await removePendingMembership(membership.offline_id);
+
+                console.log(
+                    "Membership synchronized:",
+                    membership.offline_id,
+                    "Member ID:",
+                    result.member_id
+                );
+            } catch (error) {
+                console.error(
+                    "Membership sync failed; record remains queued:",
+                    membership.offline_id,
+                    error
+                );
+
+                // Stop here and retry later. Do not discard the record.
+                break;
+            }
         }
+    } catch (error) {
+        console.error("Could not synchronize memberships:", error);
+    } finally {
+        isSyncing = false;
+        await updatePendingCount();
     }
+}
 
     document.querySelectorAll(".avail-btn").forEach(button => {
         button.addEventListener("click", () => {
