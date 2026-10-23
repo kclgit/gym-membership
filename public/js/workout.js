@@ -23,6 +23,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // The workout currently shown in the details modal
   let currentWorkout = { title: 'Workout', minutes: 30 };
+  // Custom exercises store sets/reps; built-in cards use plain strings.
+  function describeExercise(exercise) {
+    if (typeof exercise === 'string') return exercise;
+
+    const name = String((exercise && exercise.name) || '').trim();
+    if (!name) return '';
+
+    const sets = Number(exercise.sets);
+    const reps = Number(exercise.reps);
+    const hasSets = Number.isInteger(sets) && sets > 0;
+    const hasReps = Number.isInteger(reps) && reps > 0;
+
+    if (hasSets && hasReps) return `${name} — ${sets} × ${reps}`;
+    if (hasSets) return `${name} — ${sets} sets`;
+    if (hasReps) return `${name} — ${reps} reps`;
+    return name;
+  }
+
   let timerInterval = null;
   let lastDetailsTrigger = null;
 
@@ -91,8 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
     detailsTitle.innerText = titleToDisplay;
     detailsExerciseList.innerHTML = '';
     exercisesToDisplay.forEach((exercise) => {
+      const text = describeExercise(exercise);
+      if (!text) return;
+
       const li = document.createElement('li');
-      li.innerText = exercise;
+      li.innerText = text;
       detailsExerciseList.appendChild(li);
     });
 

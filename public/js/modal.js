@@ -73,15 +73,16 @@ function setExerciseRows(exercises) {
   const list = document.querySelector('.exercise-list');
   if (!list || typeof createExerciseRow !== 'function') return;
 
-  const names = exercises.length ? exercises : ['', ''];
-
   list.innerHTML = '';
-  names.slice(0, 10).forEach((name) => {
-    const row = createExerciseRow();
-    const input = row.querySelector('input');
-    if (input) input.value = name;
-    list.appendChild(row);
-  });
+
+  if (!exercises.length) {
+    list.appendChild(createExerciseRow());
+    list.appendChild(createExerciseRow());
+  } else {
+    exercises.slice(0, 10).forEach((exercise) => {
+      list.appendChild(createExerciseRow(exercise));
+    });
+  }
 
   if (typeof updateButtons === 'function') updateButtons();
 }

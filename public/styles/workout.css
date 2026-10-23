@@ -365,13 +365,20 @@ header {
 }
 
 .exercise-item {
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px 64px 44px;
+  gap: 8px;
   align-items: center;
 }
 
 .exercise-item input {
-  flex: 1;
+  min-width: 0;
+}
+
+.exercise-item input[type="number"] {
+  text-align: center;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .remove-btn {
@@ -671,6 +678,8 @@ header {
   .workouts-container { padding: 20px; }
   .form-row { grid-template-columns: 1fr; }
   .modal-body { padding: 20px; }
+  .exercise-item { grid-template-columns: 1fr 1fr 44px; }
+  .exercise-item input[name="exercise"] { grid-column: 1 / -1; }
 }
 
 @keyframes fade-up {
