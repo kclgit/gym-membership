@@ -95,11 +95,9 @@ function addExerciseRow() {
 
 // Only wire up events if the modal is present
 if (exerciseList && addExerciseBtn) {
-  // Build the initial rows here (single source of truth)
+  // Build the initial row here (single source of truth)
   exerciseList.innerHTML = '';
-  for (let i = 0; i < 2; i++) {
-    exerciseList.appendChild(createExerciseRow());
-  }
+  exerciseList.appendChild(createExerciseRow());
   updateButtons();
 
   // Add a new exercise row when "+ Add Exercise" is clicked

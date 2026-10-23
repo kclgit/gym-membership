@@ -77,7 +77,6 @@ function setExerciseRows(exercises) {
 
   if (!exercises.length) {
     list.appendChild(createExerciseRow());
-    list.appendChild(createExerciseRow());
   } else {
     exercises.slice(0, 10).forEach((exercise) => {
       list.appendChild(createExerciseRow(exercise));
