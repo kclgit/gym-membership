@@ -265,8 +265,16 @@
       calories.className = 'recent-cal';
       calories.textContent = `${Math.round((session.durationSeconds / 60) * CALORIES_PER_MIN)} kcal`;
 
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'recent-delete';
+      deleteBtn.setAttribute('data-session-id', String(session.id));
+      deleteBtn.setAttribute('aria-label', `Delete ${session.name} from history`);
+      deleteBtn.title = 'Delete session';
+      deleteBtn.textContent = '×';
+
       info.append(name, when);
-      item.append(icon, info, calories);
+      item.append(icon, info, calories, deleteBtn);
       list.appendChild(item);
     });
 
@@ -350,6 +358,27 @@
   window.addEventListener('storage', (event) => {
     if (event.key === store.key) render();
   });
+
+  // Remove a single session from the recent list.
+  const recentList = document.getElementById('recent-list');
+  if (recentList) {
+    recentList.addEventListener('click', (event) => {
+      const button = event.target.closest('.recent-delete');
+      if (!button) return;
+
+      const item = button.closest('.recent-item');
+      const name = item.querySelector('.recent-name').textContent;
+
+      if (!window.confirm(`Delete "${name}" from your history?`)) return;
+      if (!store.remove(button.getAttribute('data-session-id'))) return;
+
+      render();
+
+      if (typeof showToast === 'function') {
+        showToast('Workout removed from history');
+      }
+    });
+  }
 
   render();
 })();

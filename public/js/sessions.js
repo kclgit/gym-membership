@@ -38,6 +38,16 @@
     write([]);
   }
 
+  function remove(id) {
+    const list = read();
+    const remaining = list.filter((session) => String(session.id) !== String(id));
+
+    if (remaining.length === list.length) return false;
+
+    write(remaining);
+    return true;
+  }
+
   // Sample history for previewing the dashboard (progress.html?demo=1).
   function seedDemo() {
     const names = [
@@ -63,5 +73,5 @@
     return list;
   }
 
-  window.GymTrackSessions = { key: KEY, read, saveSession, clear, seedDemo };
+  window.GymTrackSessions = { key: KEY, read, saveSession, remove, clear, seedDemo };
 })();

@@ -895,6 +895,28 @@ header {
     font-size: 14px;
 }
 
+.recent-delete {
+    padding: 2px 6px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.recent-delete:hover {
+    color: #fff;
+    background: rgba(192, 57, 43, 0.6);
+}
+
+.recent-delete:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 1px;
+}
+
 @keyframes fade-up {
     0% {
         opacity: 0;
