@@ -592,6 +592,35 @@ header {
   outline-offset: 2px;
 }
 
+.edit-workout-btn {
+  position: absolute;
+  top: 12px;
+  right: 48px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.edit-workout-btn:hover {
+  background: #0d9488;
+  transform: scale(1.1);
+}
+
+.edit-workout-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .card-content {
   padding: 20px;
   display: flex;
