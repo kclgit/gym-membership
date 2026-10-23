@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // The workout currently shown in the details modal
   let currentWorkout = { title: 'Workout', minutes: 30 };
   let timerInterval = null;
+  let lastDetailsTrigger = null;
 
   // Pull the duration (in minutes) out of a card's stats, e.g. "⏱ 45 min"
   function getCardDuration(card) {
@@ -76,6 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
       minutes: getCardDuration(card)
     };
 
+    lastDetailsTrigger = startBtn;
+
     detailsTitle.innerText = titleToDisplay;
     detailsExerciseList.innerHTML = '';
     exercisesToDisplay.forEach((exercise) => {
@@ -85,11 +88,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     detailsModal.classList.add('active');
+
+    // Move focus into the dialog so keyboard users do not stay on the card.
+    // Wait a frame: the overlay is still visibility:hidden during this tick.
+    requestAnimationFrame(() => {
+      const focusTarget = startTimerBtn || closeDetailsBtn;
+      if (focusTarget) focusTarget.focus();
+    });
   });
 
   // Close the details modal
   function closeDetailsModal() {
-    if (detailsModal) detailsModal.classList.remove('active');
+    if (!detailsModal) return;
+    detailsModal.classList.remove('active');
+
+    if (lastDetailsTrigger) {
+      lastDetailsTrigger.focus();
+      lastDetailsTrigger = null;
+    }
   }
 
   if (closeDetailsBtn) closeDetailsBtn.addEventListener('click', closeDetailsModal);
@@ -100,6 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === detailsModal) closeDetailsModal();
     });
   }
+
+  // Escape closes the details dialog, like the other modals on the site.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && detailsModal && detailsModal.classList.contains('active')) {
+      closeDetailsModal();
+    }
+  });
 
   // Run the countdown for the selected workout, then show the success popup
   function startTimer(minutes, title) {
