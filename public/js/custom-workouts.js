@@ -35,6 +35,28 @@
     return workout;
   }
 
+  function update(id, data) {
+    if (!id) return null;
+
+    const list = read();
+    const index = list.findIndex((workout) => workout.id === id);
+    if (index === -1) return null;
+
+    const existing = list[index];
+    const workout = {
+      ...existing,
+      name: String(data.name || existing.name || 'Custom Workout'),
+      type: String(data.type || existing.type || 'strength'),
+      duration: Math.max(1, Math.round(Number(data.duration) || existing.duration || 30)),
+      exercises: Array.isArray(data.exercises) ? data.exercises : existing.exercises,
+      updatedAt: new Date().toISOString()
+    };
+
+    list[index] = workout;
+    write(list);
+    return workout;
+  }
+
   function clear() {
     write([]);
   }
@@ -73,6 +95,7 @@
     card.innerHTML = `
       <div class="card-image" style="background-image: url('Images/${type}.jpg');">
         <span class="tag ${type}">${type}</span>
+        <button type="button" class="edit-workout-btn" aria-label="Edit ${name}" title="Edit workout">&#9998;</button>
         <button type="button" class="delete-workout-btn" aria-label="Delete ${name}" title="Delete workout">&times;</button>
       </div>
       <div class="card-content">
@@ -124,5 +147,5 @@
     renderSaved();
   }
 
-  window.GymTrackCustomWorkouts = { key: KEY, read, save, remove, clear, createCard };
+  window.GymTrackCustomWorkouts = { key: KEY, read, save, update, remove, clear, createCard };
 })();
