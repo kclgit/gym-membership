@@ -85,7 +85,7 @@ header {
 /* TOAST NOTIFICATION SECTION */
 .toast-container {
     position: fixed;
-    top: 80px;
+    top: 90px;
     right: 20px;
     z-index: 3000;
     display: flex;
@@ -177,8 +177,9 @@ body::before {
 #membership-section h1 {
     font-size: clamp(36px, 2.917vw, 72px);
     font-weight: bolder;
-    margin-top: 80px;
-    padding: 50px;
+    margin-top: 20px;
+    padding-left: 50px;
+    padding-bottom: 30px;
     animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
      transform-origin: bottom;
 }
@@ -268,25 +269,50 @@ body::before {
     cursor: pointer; 
 }
 
-.membership-modal {
+#membershipModal.modal {
     position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     z-index: 99999;
 
-    display: none;
-    align-items: flex-start;
+    display: flex;
     justify-content: center;
+    align-items: flex-start;
 
-    padding: 100px 18px 24px;
+    /* Keep the popup below the fixed navbar */
+    padding: 100px 24px 24px;
+
     background: rgba(0, 0, 0, 0.78);
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
-.membership-modal.is-open {
-    display: flex;
+#membershipModal.modal[hidden] {
+    display: none !important;
+}
+
+#membershipModal .modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    max-height: calc(100vh - 124px);
+    max-height: calc(100dvh - 124px);
+
+    margin: 0 auto;
+    padding: 30px;
+
+    box-sizing: border-box;
+    flex-shrink: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    border: 1px solid #414141;
+    border-radius: 18px;
+    background: #171717;
+    color: white;
+
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
 }
 
 .membership-modal.is-open {
@@ -331,6 +357,64 @@ body::before {
     font-size: 32px; 
     line-height: 1; 
     cursor: pointer; 
+}
+
+#membershipModal .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+
+    border: 0;
+    background: transparent;
+    color: white;
+
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#membershipForm {
+    display: grid;
+    gap: 8px;
+}
+
+#membershipForm > label {
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#membershipForm input:not([type="hidden"]) {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+
+    border: 1px solid #555;
+    border-radius: 8px;
+
+    background: white;
+    color: #171717;
+    font: inherit;
+}
+
+#membershipForm input:focus {
+    outline: 2px solid #f5b301;
+    outline-offset: 1px;
+}
+
+#membershipForm button[type="submit"] {
+    width: 100%;
+    padding: 12px 16px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #f5b301;
+    color: #171717;
+
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .selected-plan { 
@@ -451,6 +535,18 @@ body::before {
 
 body.modal-open { 
     overflow: hidden; 
+}
+
+#membership-section #offline-status,
+#membership-section #connection-status {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: fit-content;
+    max-width: calc(100% - 32px);
+    margin: 100px auto 20px;
+    padding: 10px 16px;
+    overflow-wrap: anywhere;
 }
 
 @media (max-width:480px) { 
@@ -602,10 +698,17 @@ body.modal-open {
         cursor: pointer;
     }
 
-    .membership-modal {
-       padding: 85px 12px 16px;
-       align-items: flex-start;
-}
+    #membershipModal.modal {
+        padding: 85px 16px 16px;
+    }
+
+    #membershipModal .modal-content {
+        width: 100%;
+        max-width: 480px;
+        max-height: calc(100vh - 101px);
+        max-height: calc(100dvh - 101px);
+        padding: 24px 18px;
+    }
 
     .membership-dialog {
         width: 100%;
@@ -665,6 +768,11 @@ body.modal-open {
         padding: 12px 16px;
         border-radius: 8px;
     }
+
+    #membership-section #offline-status,
+    #membership-section #connection-status {
+        margin-top: 20px;
+    }
 }
 
 @media screen and (max-width: 380px) {
@@ -698,8 +806,14 @@ body.modal-open {
         padding: 16px;
     }
 
-    .membership-modal {
-        padding: 85px 8px 16px;
+    #membershipModal.modal {
+        padding: 80px 12px 12px;
+    }
+
+    #membershipModal .modal-content {
+        max-height: calc(100vh - 92px);
+        max-height: calc(100dvh - 92px);
+        padding: 22px 14px;
     }
 
     .membership-dialog {

@@ -1,4 +1,3 @@
-
 /* Membership buttons */
 .avail-btn {
     cursor: pointer;
@@ -7,47 +6,62 @@
 }
 
 /* Registration modal */
-.modal[hidden] {
+#membershipModal.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    /* Leave room for the fixed navbar */
+    padding: 100px 24px 24px;
+
+    background: rgba(0, 0, 0, 0.78);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#membershipModal.modal[hidden] {
     display: none !important;
 }
 
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.65);
-    overflow-y: auto;
-}
-
-.modal-content {
-    background: white;
-    color: #222;
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 25px;
-    border-radius: 12px;
+#membershipModal .modal-content {
     position: relative;
+    width: 100%;
+    max-width: 520px;
+
+    max-height: calc(100vh - 124px);
+    max-height: calc(100dvh - 124px);
+
+    margin: 0 auto;
+    padding: 30px;
     box-sizing: border-box;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    border: 1px solid #414141;
+    border-radius: 18px;
+    background: #171717;
+    color: white;
+
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
 }
 
-.modal-content h2 {
-    margin-top: 5px;
-    margin-bottom: 20px;
-}
-
-.close-btn {
+#membershipModal .close-btn {
     position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 28px;
+    top: 12px;
+    right: 16px;
+
     border: none;
     background: transparent;
+    color: white;
+
+    font-size: 32px;
+    line-height: 1;
     cursor: pointer;
 }
 
@@ -95,4 +109,30 @@
 
 #formMessage {
     overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 600px) {
+    #membershipModal.modal {
+        padding: 85px 16px 16px;
+    }
+
+    #membershipModal .modal-content {
+        width: 100%;
+        max-width: 480px;
+        max-height: calc(100vh - 101px);
+        max-height: calc(100dvh - 101px);
+        padding: 24px 18px;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    #membershipModal.modal {
+        padding: 80px 12px 12px;
+    }
+
+    #membershipModal .modal-content {
+        max-height: calc(100vh - 92px);
+        max-height: calc(100dvh - 92px);
+        padding: 22px 14px;
+    }
 }

@@ -169,8 +169,8 @@ header {
     font-size: clamp(28px, 2.917vw, 72px);
     font-weight: bolder;
     margin: 0px auto;
-    margin-top: 40px;
-    padding: 40px;
+    margin-top: 90px;
+    padding: 10px;
     animation: fade-up 0.8s cubic-bezier(.69,.21,.12,1.09);
      transform-origin: bottom;
     position: relative;
