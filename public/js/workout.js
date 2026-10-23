@@ -127,14 +127,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // An in-progress workout is kept here so a reload doesn't lose it.
+  const TIMER_KEY = 'gymtrack:activeTimer';
+
+  function saveActiveTimer(data) {
+    try {
+      localStorage.setItem(TIMER_KEY, JSON.stringify(data));
+    } catch (err) {
+      // Storage unavailable; the timer still runs for this page load.
+    }
+  }
+
+  function readActiveTimer() {
+    try {
+      const raw = localStorage.getItem(TIMER_KEY);
+      const data = raw ? JSON.parse(raw) : null;
+
+      if (!data || !Number.isFinite(data.minutes) || !Number.isFinite(data.startedAt)) {
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function clearActiveTimer() {
+    try {
+      localStorage.removeItem(TIMER_KEY);
+    } catch (err) {
+      // Nothing to clean up.
+    }
+  }
+
   // Run the countdown for the selected workout, then show the success popup
   function startTimer(minutes, title) {
     if (!timerOverlay || !timerDisplay) return;
 
-    let remaining = minutes * 60; // seconds
     const startedAt = Date.now();
-
-    if (timerName) timerName.textContent = title;
+    saveActiveTimer({ title, minutes, startedAt });
 
     // Log the session start to the backend (best effort)
     const sessionPromise = api
@@ -144,6 +176,23 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Could not start session:', err.message);
         return null;
       });
+
+    runTimer({ title, minutes, startedAt, sessionPromise });
+  }
+
+  // Shared by a fresh start and a timer restored after a reload.
+  function runTimer({ title, minutes, startedAt, sessionPromise }) {
+    if (!timerOverlay || !timerDisplay) return;
+
+    const totalSeconds = Math.max(1, Math.round(minutes * 60));
+    let remaining = totalSeconds - Math.floor((Date.now() - startedAt) / 1000);
+
+    if (remaining <= 0) {
+      clearActiveTimer();
+      return;
+    }
+
+    if (timerName) timerName.textContent = title;
 
     function render() {
       const m = String(Math.floor(remaining / 60)).padStart(2, '0');
@@ -162,10 +211,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function finish() {
       if (finished) return;
       finished = true;
+      clearActiveTimer();
       stop();
 
       const sessionId = await sessionPromise;
-      const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
+      const durationSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
       const tooShort = durationSeconds < MIN_SESSION_SECONDS;
 
       // Keep a local copy so the Progress page can show this session.
@@ -190,20 +240,26 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(tooShort ? 'Session under a minute was not saved.' : 'Workout saved!');
     }
 
+    // Derive the time from the clock so background tabs don't drift.
+    function tick() {
+      remaining = totalSeconds - Math.floor((Date.now() - startedAt) / 1000);
+
+      if (remaining <= 0) {
+        remaining = 0;
+        render();
+        finish();
+      } else {
+        render();
+      }
+    }
+
     clearInterval(timerInterval);
     render();
     timerOverlay.classList.add('active');
 
     if (finishTimerBtn) finishTimerBtn.onclick = finish;
 
-    timerInterval = setInterval(() => {
-      remaining -= 1;
-      if (remaining <= 0) {
-        finish();
-      } else {
-        render();
-      }
-    }, 1000);
+    timerInterval = setInterval(tick, 1000);
   }
 
   // Show the "Workout Started!" popup first, then start the timer when dismissed
@@ -225,5 +281,30 @@ document.addEventListener('DOMContentLoaded', () => {
       pendingWorkout = null;
       startTimer(minutes, title);
     });
+  }
+
+  // Reopen the timer if the page was reloaded while a workout was running.
+  if (timerOverlay && timerDisplay) {
+    const active = readActiveTimer();
+
+    if (active) {
+      const elapsed = Math.floor((Date.now() - active.startedAt) / 1000);
+
+      if (elapsed < active.minutes * 60) {
+        runTimer({
+          title: active.title || 'Workout',
+          minutes: active.minutes,
+          startedAt: active.startedAt,
+          sessionPromise: Promise.resolve(null)
+        });
+
+        if (typeof showToast === 'function') {
+          showToast('Resumed your workout');
+        }
+      } else {
+        // Finished while the page was closed; do not invent a session.
+        clearActiveTimer();
+      }
+    }
   }
 });
