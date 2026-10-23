@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return restEndsAtTs ? Math.max(0, Math.ceil((restEndsAtTs - Date.now()) / 1000)) : 0;
     }
 
-    // Created on the pause click so the browser allows the beep later.
+    // Created on the pause click so the browser allows the alarm later.
     function unlockAudio() {
       try {
         const AudioCtor = window.AudioContext || window.webkitAudioContext;
@@ -247,25 +247,42 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    function playRestBeep() {
+    // Three rising beeps so the end of a rest is hard to miss.
+    function playRestAlarm() {
       try {
         const AudioCtor = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtor) return;
         if (!audioCtx) audioCtx = new AudioCtor();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        const beep = () => {
+          const start = audioCtx.currentTime;
+          const tones = [880, 1046, 1318];
 
-        osc.type = 'sine';
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.2, now + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start();
-        osc.stop(now + 0.45);
+          tones.forEach((frequency, index) => {
+            const at = start + index * 0.22;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(frequency, at);
+            gain.gain.setValueAtTime(0.0001, at);
+            gain.gain.exponentialRampToValueAtTime(0.35, at + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.16);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(at);
+            osc.stop(at + 0.18);
+          });
+        };
+
+        if (audioCtx.state === 'suspended') {
+          Promise.resolve(audioCtx.resume()).then(beep).catch(() => {});
+        } else {
+          beep();
+        }
+
+        if (typeof navigator.vibrate === 'function') {
+          navigator.vibrate([180, 80, 180]);
+        }
       } catch (err) {
         // Audio is optional.
       }
@@ -438,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (restEndsAtTs && !restAlerted && Date.now() >= restEndsAtTs) {
           restAlerted = true;
-          playRestBeep();
+          playRestAlarm();
           render();
         }
 
