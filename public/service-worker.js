@@ -147,32 +147,44 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // CSS, JavaScript and images: try the network first so updates arrive,
-  // then fall back to the cached copy when offline.
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (response.ok) {
-          const copy = response.clone();
+// CSS, JavaScript and images:
+// Use the cache first when offline; update from the network when online.
+event.respondWith(
+    (async () => {
+        if (!navigator.onLine) {
+            const cached = await caches.match(request);
 
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
+            if (cached) {
+                return cached;
+            }
         }
 
-        return response;
-      })
-      .catch(async () => {
-        const cached = await caches.match(request);
+        try {
+            const response = await fetch(request);
 
-        if (cached) return cached;
+            if (response.ok) {
+                const copy = response.clone();
 
-        return new Response("Asset unavailable offline.", {
-          status: 503,
-          headers: {
-            "Content-Type": "text/plain; charset=utf-8"
-          }
-        });
-      })
-  );
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(request, copy);
+                });
+            }
+
+            return response;
+        } catch (error) {
+            const cached = await caches.match(request);
+
+            if (cached) {
+                return cached;
+            }
+
+            return new Response("Asset unavailable offline.", {
+                status: 503,
+                headers: {
+                    "Content-Type": "text/plain; charset=utf-8"
+                }
+            });
+        }
+    })()
+);
 });
