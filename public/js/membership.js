@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("membershipModal");
     const form = document.getElementById("membershipForm");
@@ -10,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitButton = document.getElementById("submitMembership");
     const closeButton = document.getElementById("closeModal");
 
-    // Stop if this page does not contain the membership form.
     if (
         !modal || !form || !planInput || !planDisplay ||
         !startDate || !expirationDate || !message ||
@@ -18,10 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
         return;
     }
-
-    // ========================================
-    // MEMBERSHIP PLAN CONFIGURATION
-    // ========================================
 
     const planDetails = {
         Promo: "Promo — ₱1,500/Month",
@@ -31,10 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const allowedPlans = ["Promo", "Regular", "Premium"];
 
-    // ========================================
-    // DATE FUNCTIONS
-    // ========================================
-
     function localDateString(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -43,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${year}-${month}-${day}`;
     }
 
-    // Add one calendar month, handling dates like January 31.
     function addOneMonth(dateString) {
         if (!dateString) return "";
 
@@ -79,10 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
         expirationDate.value = addOneMonth(startDate.value);
     }
 
-    // ========================================
-    // MODAL FUNCTIONS
-    // ========================================
-
     function openModal(plan) {
         if (!allowedPlans.includes(plan)) {
             message.textContent = "Invalid membership plan.";
@@ -94,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
         message.textContent = "";
         message.className = "";
 
-        // Set a fresh default start and expiration date.
         startDate.value = localDateString(new Date());
         resetDates();
 
@@ -118,10 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
             lastFocused = null;
         }
     }
-
-    // ========================================
-    // INDEXEDDB OFFLINE STORAGE
-    // ========================================
 
     const DB_NAME = "GymTrackOffline";
     const STORE_NAME = "pendingMemberships";
@@ -162,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Offline database upgrade is blocked.");
             };
         }).catch(error => {
-            // Permit another attempt if opening the database failed.
+            
             databasePromise = null;
             throw error;
         });
@@ -250,10 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .toString(36).slice(2)}`;
     }
 
-    // ========================================
-    // CONNECTION STATUS AND PENDING COUNT
-    // ========================================
-
     async function updatePendingCount() {
         const status = document.getElementById("offline-status");
 
@@ -273,10 +249,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 : "Offline · Unable to access offline storage";
         }
     }
-
-    // ========================================
-    // SYNCHRONIZE PENDING MEMBERSHIPS
-    // ========================================
 
     let isSyncing = false;
 
@@ -298,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         membership
                     );
 
-                    // Do not remove records explicitly rejected by PHP.
                     if (result && result.success === false) {
                         console.error(
                             "Membership rejected by server:",
@@ -306,11 +277,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             result.message
                         );
 
-                        // Keep the record for inspection or a later retry.
                         continue;
                     }
 
-                    // Remove only after the server reports success.
                     await removePendingMembership(
                         membership.offline_id
                     );
@@ -326,7 +295,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         error
                     );
 
-                    // Retry on the next connection or page visit.
                     break;
                 }
             }
@@ -337,10 +305,6 @@ document.addEventListener("DOMContentLoaded", () => {
             await updatePendingCount();
         }
     }
-
-    // ========================================
-    // MEMBERSHIP PLAN BUTTONS
-    // ========================================
 
     document.querySelectorAll(".avail-btn").forEach(button => {
         button.addEventListener("click", () => {
@@ -362,17 +326,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ========================================
-    // AUTOMATIC EXPIRATION DATE
-    // ========================================
-
     startDate.addEventListener("change", () => {
         expirationDate.value = addOneMonth(startDate.value);
     });
-
-    // ========================================
-    // SUBMIT MEMBERSHIP REGISTRATION
-    // ========================================
 
     form.addEventListener("submit", async event => {
         event.preventDefault();
@@ -395,12 +351,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         expirationDate.value = addOneMonth(startDate.value);
 
-        // Collect the form fields using their existing name attributes.
         const data = Object.fromEntries(
             new FormData(form).entries()
         );
 
-        // Every registration gets one stable ID for duplicate protection.
         const requestData = {
             ...data,
             offline_id: createOfflineId()
@@ -411,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             if (!navigator.onLine) {
-                // Save locally first; do not pretend the server accepted it.
+            
                 await saveOfflineMembership(requestData);
 
                 message.textContent =
@@ -439,7 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                // Attempt normal online registration first.
+    
                 const result = await api.post(
                     "create_membership.php",
                     requestData
@@ -470,8 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     message.textContent = "";
                 }, 2500);
             } catch (error) {
-                // Queue only likely network failures. Do not silently queue
-                // validation or other server-side rejection errors.
+
                 const networkFailure =
                     !navigator.onLine ||
                     /failed to fetch|networkerror|network request failed|load failed|fetch failed/i
@@ -524,10 +477,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ========================================
-    // AUTOMATIC RETRY WHEN ONLINE
-    // ========================================
-
     window.addEventListener("online", () => {
         updatePendingCount();
         syncMemberships();
@@ -547,7 +496,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Initial status and retry when the page is opened.
     updatePendingCount();
 
     if (navigator.onLine) {
