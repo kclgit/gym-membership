@@ -95,13 +95,13 @@
                    maxlength="150" required>
 
             <label for="address">Complete Address</label>
-            <input type="text" id="address" name="address"
+            <input type="text" id="address" name="address" autocomplete="street-address"
                    maxlength="255" required>
 
             <label for="contact_no">Contact Number</label>
             <input type="tel" id="contact_no" name="contact_no"
                    maxlength="20" required
-                   pattern="[0-9+() -]{7,20}"
+                   pattern="[0-9+\(\)\- ]{7,20}"
                    title="Enter a valid contact number.">
 
             <label for="emergency_contact_no">
@@ -110,7 +110,7 @@
             <input type="tel" id="emergency_contact_no"
                    name="emergency_contact_no"
                    maxlength="20" required
-                   pattern="[0-9+() -]{7,20}"
+                   pattern="[0-9+\(\)\- ]{7,20}"
                    title="Enter a valid emergency contact number.">
 
             <label for="membership_plan_display">Membership Plan</label>
