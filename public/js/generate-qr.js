@@ -20,6 +20,4 @@ document.addEventListener("DOMContentLoaded", function () {
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
     });
-
-    console.log("Gym QR code generated successfully.");
 });

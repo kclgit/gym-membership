@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "gymtrack-v3";
+const CACHE_NAME = "gymtrack-v4";
 
 const APP_FILES = [
   "./",
@@ -9,6 +9,7 @@ const APP_FILES = [
   "./workout.html",
   "./offline.html",
   "./manifest.json",
+  "./favicon.svg",
 
   // JavaScript
   "./js/app.js",

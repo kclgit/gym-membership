@@ -283,11 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     await removePendingMembership(
                         membership.offline_id
                     );
-
-                    console.log(
-                        "Membership synchronized:",
-                        membership.offline_id
-                    );
                 } catch (error) {
                     console.error(
                         "Membership sync failed; record remains queued:",
