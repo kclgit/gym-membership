@@ -921,8 +921,52 @@ header {
 
 .timer-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+/* Shrink the timer to a corner widget so the page stays usable. */
+.timer-overlay.minimized {
+  inset: auto 16px 16px auto;
+  width: max-content;
+  height: max-content;
+  background: transparent;
+  padding: 0;
+  pointer-events: none;
+}
+
+.timer-overlay.minimized .timer-box {
+  pointer-events: auto;
+  width: auto;
+  max-width: 240px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.timer-overlay.minimized h2 {
+  display: none;
+}
+
+.timer-overlay.minimized #timer-workout-name {
+  margin: 0 0 4px;
+  font-size: 12px;
+}
+
+.timer-overlay.minimized .timer-display {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.timer-overlay.minimized .timer-actions {
+  gap: 6px;
+}
+
+.timer-overlay.minimized .btn-cancel {
+  padding: 7px 10px;
+  font-size: 12px;
+  border-radius: 8px;
 }
 
 .filter-input {

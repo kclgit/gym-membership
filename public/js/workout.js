@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const timerName = document.getElementById('timer-workout-name');
   const finishTimerBtn = document.getElementById('finish-timer-btn');
   const pauseTimerBtn = document.getElementById('pause-timer-btn');
+  const minimizeTimerBtn = document.getElementById('minimize-timer-btn');
   const timerStatus = document.getElementById('timer-status');
 
   // The workout currently shown in the details modal
@@ -155,7 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startedAt: data.startedAt,
         paused: !!data.paused,
         pausedAt: Number.isFinite(data.pausedAt) ? data.pausedAt : 0,
-        pausedMs: Number.isFinite(data.pausedMs) ? data.pausedMs : 0
+        pausedMs: Number.isFinite(data.pausedMs) ? data.pausedMs : 0,
+        minimized: !!data.minimized
       };
     } catch (err) {
       return null;
@@ -186,7 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
       startedAt: Date.now(),
       paused: false,
       pausedAt: 0,
-      pausedMs: 0
+      pausedMs: 0,
+      minimized: false
     };
 
     saveActiveTimer(timer);
@@ -204,13 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Shared by a fresh start and a timer restored after a reload.
-  function runTimer({ title, minutes, startedAt, paused, pausedAt, pausedMs, sessionPromise }) {
+  function runTimer({ title, minutes, startedAt, paused, pausedAt, pausedMs, minimized, sessionPromise }) {
     if (!timerOverlay || !timerDisplay) return;
 
     const totalSeconds = Math.max(1, Math.round(minutes * 60));
     let isPaused = !!paused;
     let pauseStartedAt = pausedAt || 0;
     let pausedTotalMs = pausedMs || 0;
+    let isMinimized = !!minimized;
 
     function elapsedMs() {
       return activeElapsedMs({
@@ -239,7 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startedAt,
         paused: isPaused,
         pausedAt: pauseStartedAt,
-        pausedMs: pausedTotalMs
+        pausedMs: pausedTotalMs,
+        minimized: isMinimized
       });
     }
 
@@ -258,10 +263,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    function applyMinimized() {
+      timerOverlay.classList.toggle('minimized', isMinimized);
+
+      if (minimizeTimerBtn) {
+        minimizeTimerBtn.textContent = isMinimized ? 'Expand' : 'Minimize';
+        minimizeTimerBtn.setAttribute('aria-pressed', String(isMinimized));
+      }
+    }
+
+    function toggleMinimize() {
+      isMinimized = !isMinimized;
+      applyMinimized();
+      persist();
+    }
+
     function stop() {
       clearInterval(timerInterval);
       timerInterval = null;
-      timerOverlay.classList.remove('active');
+      timerOverlay.classList.remove('active', 'minimized');
     }
 
     let finished = false;
@@ -333,10 +353,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     clearInterval(timerInterval);
+    applyMinimized();
     render();
     timerOverlay.classList.add('active');
 
     if (pauseTimerBtn) pauseTimerBtn.onclick = togglePause;
+    if (minimizeTimerBtn) minimizeTimerBtn.onclick = toggleMinimize;
     if (finishTimerBtn) finishTimerBtn.onclick = finish;
 
     timerInterval = setInterval(tick, 1000);
