@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const minimizeTimerBtn = document.getElementById('minimize-timer-btn');
   const timerStatus = document.getElementById('timer-status');
   const restSelect = document.getElementById('rest-duration');
+  const timerBox = timerOverlay ? timerOverlay.querySelector('.timer-box') : null;
+  const timerProgressFill = document.getElementById('timer-progress-fill');
 
   // The workout currently shown in the details modal
   let currentWorkout = { title: 'Workout', minutes: 30 };
@@ -224,6 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let restEndsAtTs = restEndsAt || 0;
     let restAlerted = restEndsAtTs > 0 && restEndsAtTs <= Date.now();
     let audioCtx = null;
+    let alarmTimer = null;
+    let alarmVoices = [];
 
     function formatClock(total) {
       const m = String(Math.floor(total / 60)).padStart(2, '0');
@@ -247,44 +251,91 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Three rising beeps so the end of a rest is hard to miss.
-    function playRestAlarm() {
+    // Schedules one burst of three rising beeps.
+    function playAlarmBurst() {
+      const start = audioCtx.currentTime;
+      const tones = [880, 1046, 1318];
+
+      tones.forEach((frequency, index) => {
+        const at = start + index * 0.22;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const voice = { osc, gain };
+
+        alarmVoices.push(voice);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(frequency, at);
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(0.35, at + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.16);
+
+        osc.onended = () => {
+          const indexOfVoice = alarmVoices.indexOf(voice);
+          if (indexOfVoice !== -1) alarmVoices.splice(indexOfVoice, 1);
+
+          try {
+            osc.disconnect();
+            gain.disconnect();
+          } catch (err) {
+            // Already disconnected.
+          }
+        };
+
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(at);
+        osc.stop(at + 0.18);
+      });
+    }
+
+    // Repeats until the user resumes the workout.
+    function startRestAlarm() {
       try {
         const AudioCtor = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtor) return;
         if (!audioCtx) audioCtx = new AudioCtor();
 
-        const beep = () => {
-          const start = audioCtx.currentTime;
-          const tones = [880, 1046, 1318];
+        const begin = () => {
+          // A quick Resume while audio was unlocking must win.
+          if (!isPaused || restEndsAtTs === 0 || restEndsAtTs > Date.now()) return;
 
-          tones.forEach((frequency, index) => {
-            const at = start + index * 0.22;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(frequency, at);
-            gain.gain.setValueAtTime(0.0001, at);
-            gain.gain.exponentialRampToValueAtTime(0.35, at + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.16);
-            osc.connect(gain).connect(audioCtx.destination);
-            osc.start(at);
-            osc.stop(at + 0.18);
-          });
+          playAlarmBurst();
+          clearInterval(alarmTimer);
+          alarmTimer = setInterval(playAlarmBurst, 1800);
         };
 
         if (audioCtx.state === 'suspended') {
-          Promise.resolve(audioCtx.resume()).then(beep).catch(() => {});
+          Promise.resolve(audioCtx.resume()).then(begin).catch(() => {});
         } else {
-          beep();
+          begin();
         }
 
         if (typeof navigator.vibrate === 'function') {
-          navigator.vibrate([180, 80, 180]);
+          navigator.vibrate([180, 80, 180, 900, 180, 80, 180]);
         }
       } catch (err) {
         // Audio is optional.
+      }
+    }
+
+    function stopRestAlarm() {
+      clearInterval(alarmTimer);
+      alarmTimer = null;
+
+      alarmVoices.forEach(({ osc, gain }) => {
+        try {
+          osc.stop();
+          osc.disconnect();
+          gain.disconnect();
+        } catch (err) {
+          // Already stopped.
+        }
+      });
+
+      alarmVoices = [];
+
+      if (typeof navigator.vibrate === 'function') {
+        navigator.vibrate(0);
       }
     }
 
@@ -321,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!isPaused) return;
 
+        stopRestAlarm();
         restEndsAtTs = restTotalSeconds > 0 ? Date.now() + restTotalSeconds * 1000 : 0;
         restAlerted = false;
 
@@ -346,14 +398,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function render() {
-      timerDisplay.textContent = formatClock(remainingSeconds());
+      const remaining = remainingSeconds();
+      const restLeft = restRemainingSeconds();
+      const restOver = isPaused && restEndsAtTs > 0 && restLeft <= 0;
+
+      timerDisplay.textContent = formatClock(remaining);
       timerDisplay.classList.toggle('paused', isPaused);
+
+      let state = 'normal';
+      if (restOver) state = 'over';
+      else if (isPaused) state = 'resting';
+      else if (remaining <= 60) state = 'critical';
+      else if (remaining <= 300) state = 'soon';
+
+      if (timerBox) {
+        timerBox.dataset.state = state;
+        timerBox.classList.toggle('pulse', state === 'critical' && remaining <= 10);
+      }
+
+      if (timerProgressFill) {
+        const ratio = Math.max(0, Math.min(1, remaining / totalSeconds));
+        timerProgressFill.style.width = `${(ratio * 100).toFixed(2)}%`;
+      }
 
       if (timerStatus) {
         timerStatus.hidden = !isPaused;
 
         if (isPaused) {
-          const restLeft = restRemainingSeconds();
+          timerStatus.dataset.state = restEndsAtTs
+            ? (restLeft > 0 ? (restLeft <= 10 ? 'soon' : 'resting') : 'over')
+            : 'resting';
+
           timerStatus.textContent = restEndsAtTs
             ? (restLeft > 0 ? `Resting — ${formatClock(restLeft)} left` : 'Rest over — resume when ready')
             : 'Resting — timer paused';
@@ -382,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function stop() {
+      stopRestAlarm();
       clearInterval(timerInterval);
       timerInterval = null;
       timerOverlay.classList.remove('active', 'minimized');
@@ -394,6 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (finished) return;
 
       if (isPaused) {
+        stopRestAlarm();
         pausedTotalMs += Date.now() - pauseStartedAt;
         pauseStartedAt = 0;
         isPaused = false;
@@ -455,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (restEndsAtTs && !restAlerted && Date.now() >= restEndsAtTs) {
           restAlerted = true;
-          playRestAlarm();
+          startRestAlarm();
           render();
         }
 
