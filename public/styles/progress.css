@@ -403,8 +403,10 @@ header {
 
 .chart-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     margin-bottom: 24px;
 }
 
@@ -726,6 +728,7 @@ header {
 @media (max-width: 600px) {
     .chart-bar { font-size: 8px; padding-top: 4px; }
     .chart-label { font-size: 9px; }
+    .history-actions { width: 100%; }
 }
 
 @media (min-width: 768px) {
@@ -825,6 +828,39 @@ header {
 }
 
 /* --- Recent activity list --- */
+.history-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-btn {
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.history-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.history-btn.danger:hover {
+    background: rgba(192, 57, 43, 0.6);
+    border-color: transparent;
+}
+
+.history-btn:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+}
+
 .recent-list {
     list-style: none;
     margin: 0;
@@ -832,6 +868,12 @@ header {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.recent-list.expanded {
+    max-height: 440px;
+    overflow-y: auto;
+    padding-right: 6px;
 }
 
 .recent-item {

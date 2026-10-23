@@ -7,6 +7,7 @@
   const WEEKLY_CALORIE_GOAL = 750;
   const RECENT_LIMIT = 5;
   const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  let showAllSessions = false;
 
   // ?demo=1 fills the page with sample history for a quick preview.
   if (new URLSearchParams(location.search).get('demo') === '1') {
@@ -232,11 +233,13 @@
     const summary = document.getElementById('recent-summary');
     const empty = document.getElementById('recent-empty');
 
-    const recent = sessions
+    const sorted = sessions
       .slice()
-      .sort((a, b) => String(b.finishedAt).localeCompare(String(a.finishedAt)))
-      .slice(0, RECENT_LIMIT);
+      .sort((a, b) => String(b.finishedAt).localeCompare(String(a.finishedAt)));
 
+    const recent = showAllSessions ? sorted : sorted.slice(0, RECENT_LIMIT);
+
+    list.classList.toggle('expanded', showAllSessions);
     list.innerHTML = '';
 
     recent.forEach((session) => {
@@ -278,9 +281,21 @@
       list.appendChild(item);
     });
 
+    const toggleBtn = document.getElementById('toggle-history-btn');
+    if (toggleBtn) {
+      toggleBtn.hidden = sorted.length <= RECENT_LIMIT;
+      toggleBtn.textContent = showAllSessions ? 'Show less' : `View all (${sorted.length})`;
+      toggleBtn.setAttribute('aria-expanded', String(showAllSessions));
+    }
+
+    const clearBtn = document.getElementById('clear-history-btn');
+    if (clearBtn) clearBtn.hidden = sorted.length === 0;
+
     if (summary) {
-      summary.textContent = recent.length
-        ? `Last ${recent.length} workout${recent.length === 1 ? '' : 's'}`
+      summary.textContent = sorted.length
+        ? (showAllSessions
+            ? `Showing all ${sorted.length} workout${sorted.length === 1 ? '' : 's'}`
+            : `Last ${recent.length} of ${sorted.length} workout${sorted.length === 1 ? '' : 's'}`)
         : '';
     }
 
@@ -376,6 +391,33 @@
 
       if (typeof showToast === 'function') {
         showToast('Workout removed from history');
+      }
+    });
+  }
+
+  const toggleHistoryBtn = document.getElementById('toggle-history-btn');
+  if (toggleHistoryBtn) {
+    toggleHistoryBtn.addEventListener('click', () => {
+      showAllSessions = !showAllSessions;
+      renderRecent(store.read());
+    });
+  }
+
+  const clearHistoryBtn = document.getElementById('clear-history-btn');
+  if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', () => {
+      const count = store.read().length;
+      if (count === 0) return;
+
+      const label = `Clear all ${count} workout${count === 1 ? '' : 's'} from your history? This cannot be undone.`;
+      if (!window.confirm(label)) return;
+
+      store.clear();
+      showAllSessions = false;
+      render();
+
+      if (typeof showToast === 'function') {
+        showToast('Workout history cleared');
       }
     });
   }
