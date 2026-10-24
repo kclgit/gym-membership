@@ -357,6 +357,24 @@ header {
   gap: 20px;
 }
 
+.form-row-three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.workout-estimate {
+  margin: -2px 0 18px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8f9fa;
+  color: var(--text-gray);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.workout-estimate strong {
+  color: var(--primary);
+}
+
 
 .exercise-list {
   display: flex;

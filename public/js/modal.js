@@ -8,6 +8,31 @@ const workoutName = document.querySelector('#workoutName');
 const modalTitle = document.getElementById('modal-title');
 const saveWorkoutBtn = document.getElementById('save-workout-btn');
 
+const INTENSITY_LABELS = { low: 'Low', medium: 'Medium', high: 'High' };
+
+// Update the live calorie estimate under the duration and intensity fields.
+function updateKcalEstimate() {
+  const estimateEl = document.getElementById('workout-kcal-estimate');
+  if (!estimateEl) return;
+
+  const durationField = document.getElementById('workoutDuration');
+  const intensityField = document.getElementById('workoutIntensity');
+  const minutes = Number(durationField ? durationField.value : '');
+  const intensity = intensityField ? intensityField.value : '';
+  const intensityValue = INTENSITY_LABELS[intensity] ? intensity : '';
+
+  if (!Number.isFinite(minutes) || minutes < 1 || !intensityValue ||
+      typeof GymTrackCustomWorkouts === 'undefined') {
+    estimateEl.textContent = 'Enter a duration and intensity to estimate calories.';
+    return;
+  }
+
+  const kcal = GymTrackCustomWorkouts.estimateKcal(minutes, intensityValue);
+  estimateEl.innerHTML =
+    `Estimated burn: <strong>${kcal} kcal</strong> ` +
+    `(${INTENSITY_LABELS[intensityValue]} intensity).`;
+}
+
 // Remember what opened the modal so focus can return to it
 let lastTrigger = null;
 let editingWorkoutId = null;
@@ -95,6 +120,7 @@ function resetForm() {
   const name = document.getElementById('workoutName');
   const type = document.getElementById('workoutType');
   const duration = document.getElementById('workoutDuration');
+  const intensity = document.getElementById('workoutIntensity');
 
   if (name) {
     name.value = '';
@@ -108,6 +134,12 @@ function resetForm() {
     duration.removeAttribute('aria-invalid');
   }
 
+  if (intensity) {
+    intensity.value = '';
+    intensity.removeAttribute('aria-invalid');
+  }
+
+  updateKcalEstimate();
   setExerciseRows([]);
 }
 
@@ -119,6 +151,7 @@ function openEditModal(workout, trigger) {
   const name = document.getElementById('workoutName');
   const type = document.getElementById('workoutType');
   const duration = document.getElementById('workoutDuration');
+  const intensity = document.getElementById('workoutIntensity');
 
   if (name) {
     name.value = workout.name;
@@ -132,6 +165,13 @@ function openEditModal(workout, trigger) {
     duration.removeAttribute('aria-invalid');
   }
 
+  if (intensity) {
+    // Old custom workouts have no intensity yet, so force a choice.
+    intensity.value = INTENSITY_LABELS[workout.intensity] ? workout.intensity : '';
+    intensity.removeAttribute('aria-invalid');
+  }
+
+  updateKcalEstimate();
   setExerciseRows(Array.isArray(workout.exercises) ? workout.exercises : []);
 
   if (modalTitle) modalTitle.textContent = 'Edit Custom Workout';
@@ -146,7 +186,7 @@ function markInvalid(input, message) {
 
   input.setAttribute('aria-invalid', 'true');
   input.focus();
-  input.select();
+  if (typeof input.select === 'function') input.select();
 }
 
 ['workoutName', 'workoutDuration'].forEach((id) => {
@@ -154,14 +194,26 @@ function markInvalid(input, message) {
   if (input) input.addEventListener('input', () => input.removeAttribute('aria-invalid'));
 });
 
+const durationField = document.getElementById('workoutDuration');
+const intensityField = document.getElementById('workoutIntensity');
+
+if (durationField) durationField.addEventListener('input', updateKcalEstimate);
+
+if (intensityField) {
+  intensityField.addEventListener('change', () => {
+    intensityField.removeAttribute('aria-invalid');
+    updateKcalEstimate();
+  });
+}
+
 if (saveWorkoutBtn) {
   saveWorkoutBtn.addEventListener('click', () => {
     const nameField = document.getElementById('workoutName');
-    const durationField = document.getElementById('workoutDuration');
     const nameInput = nameField.value.trim();
     const typeInput = document.getElementById('workoutType').value;
     const rawDuration = durationField.value.trim();
-    const durationInput = rawDuration === '' ? 30 : Number(rawDuration);
+    const intensityInput = intensityField ? intensityField.value : '';
+    const durationInput = Number(rawDuration);
 
     // Exercises come from exercises.js (single source of truth)
     const customExercises = typeof getExercises === 'function' ? getExercises() : [];
@@ -176,8 +228,18 @@ if (saveWorkoutBtn) {
       return;
     }
 
+    if (rawDuration === '') {
+      markInvalid(durationField, 'Please enter the workout duration.');
+      return;
+    }
+
     if (!Number.isFinite(durationInput) || durationInput < 1 || durationInput > 180) {
       markInvalid(durationField, 'Duration must be between 1 and 180 minutes.');
+      return;
+    }
+
+    if (!INTENSITY_LABELS[intensityInput]) {
+      markInvalid(intensityField, 'Please choose an intensity level.');
       return;
     }
 
@@ -199,6 +261,7 @@ if (saveWorkoutBtn) {
         name: nameInput,
         type: typeInput,
         duration: durationInput,
+        intensity: intensityInput,
         exercises: customExercises
       });
 
@@ -238,6 +301,7 @@ if (saveWorkoutBtn) {
       name: nameInput,
       type: typeInput,
       duration: durationInput,
+      intensity: intensityInput,
       exercises: customExercises
     });
 

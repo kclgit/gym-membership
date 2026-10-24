@@ -3,6 +3,24 @@
   const KEY = 'gymtrack:customWorkouts';
   const MAX_WORKOUTS = 50;
 
+  // kcal per minute, used to estimate calories from intensity.
+  const INTENSITY_RATES = { low: 5, medium: 8, high: 12 };
+  const INTENSITY_LABELS = { low: 'Low', medium: 'Medium', high: 'High' };
+
+  function normalizeIntensity(value) {
+    return Object.prototype.hasOwnProperty.call(INTENSITY_RATES, value) ? value : '';
+  }
+
+  function estimateKcal(duration, intensity) {
+    const rate = INTENSITY_RATES[normalizeIntensity(intensity)];
+    if (!rate) return 0;
+
+    const minutes = Number(duration);
+    if (!Number.isFinite(minutes) || minutes <= 0) return 0;
+
+    return Math.max(1, Math.round(minutes * rate));
+  }
+
   function read() {
     try {
       const raw = localStorage.getItem(KEY);
@@ -22,11 +40,16 @@
   }
 
   function save(data) {
+    const duration = Math.max(1, Math.round(Number(data.duration) || 30));
+    const intensity = normalizeIntensity(data.intensity);
+
     const workout = {
       id: 'custom-' + Date.now(),
       name: String(data.name || 'Custom Workout'),
       type: String(data.type || 'strength'),
-      duration: Math.max(1, Math.round(Number(data.duration) || 30)),
+      duration,
+      intensity,
+      kcal: estimateKcal(duration, intensity),
       exercises: Array.isArray(data.exercises) ? data.exercises : [],
       createdAt: new Date().toISOString()
     };
@@ -43,11 +66,18 @@
     if (index === -1) return null;
 
     const existing = list[index];
+    const duration = Math.max(1, Math.round(Number(data.duration) || existing.duration || 30));
+    const intensity = normalizeIntensity(
+      data.intensity !== undefined ? data.intensity : existing.intensity
+    );
+
     const workout = {
       ...existing,
       name: String(data.name || existing.name || 'Custom Workout'),
       type: String(data.type || existing.type || 'strength'),
-      duration: Math.max(1, Math.round(Number(data.duration) || existing.duration || 30)),
+      duration,
+      intensity,
+      kcal: estimateKcal(duration, intensity),
       exercises: Array.isArray(data.exercises) ? data.exercises : existing.exercises,
       updatedAt: new Date().toISOString()
     };
@@ -91,6 +121,13 @@
 
     const type = escapeHtml(workout.type);
     const name = escapeHtml(workout.name);
+    const intensity = normalizeIntensity(workout.intensity);
+    const intensityLabel = INTENSITY_LABELS[intensity] || '';
+    const kcal = Number(workout.kcal) > 0
+      ? Math.round(Number(workout.kcal))
+      : estimateKcal(workout.duration, intensity);
+    const energy = kcal > 0 ? `🔥 ${kcal} kcal` : '🔥 Custom';
+    const energyTitle = intensityLabel ? `${intensityLabel} intensity` : 'Custom workout';
 
     card.innerHTML = `
       <div class="card-image" style="background-image: url('Images/${type}.jpg');">
@@ -102,7 +139,7 @@
         <h3>${name}</h3>
         <div class="card-stats">
           <span>⏱ ${workout.duration} min</span>
-          <span>🔥 Custom</span>
+          <span title="${escapeHtml(energyTitle)}">${energy}</span>
         </div>
         <button class="start-btn">Start Workout</button>
       </div>
@@ -147,5 +184,14 @@
     renderSaved();
   }
 
-  window.GymTrackCustomWorkouts = { key: KEY, read, save, update, remove, clear, createCard };
+  window.GymTrackCustomWorkouts = {
+    key: KEY,
+    read,
+    save,
+    update,
+    remove,
+    clear,
+    createCard,
+    estimateKcal
+  };
 })();

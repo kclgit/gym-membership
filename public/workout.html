@@ -130,7 +130,7 @@
           <label for="workoutName">Workout Name</label>
           <input type="text" id="workoutName" placeholder="e.g., Leg Day Destroyer" maxlength="60">
         </div>
-        <div class="form-row">
+        <div class="form-row form-row-three">
           <div class="form-group">
             <label for="workoutType">Type</label>
             <select id="workoutType">
@@ -142,9 +142,21 @@
           </div>
           <div class="form-group">
             <label for="workoutDuration">Duration (minutes)</label>
-            <input type="number" id="workoutDuration" placeholder="45" min="1" max="180">
+            <input type="number" id="workoutDuration" placeholder="45" min="1" max="180" required>
+          </div>
+          <div class="form-group">
+            <label for="workoutIntensity">Intensity</label>
+            <select id="workoutIntensity" required>
+              <option value="">Select intensity</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
         </div>
+        <p class="workout-estimate" id="workout-kcal-estimate">
+          Enter a duration and intensity to estimate calories.
+        </p>
         <div class="form-group">
           <span id="exercises-label">Exercises</span>
           <p class="exercise-hint">
