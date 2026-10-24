@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "gymtrack-v6";
+const CACHE_NAME = "gymtrack-v7";
 
 const APP_FILES = [
   "./",

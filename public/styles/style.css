@@ -183,11 +183,27 @@ header {
 }
 
 #home p {
-    font-size: clamp(18px, 1.458vw, 36px);
-    color: white;
+    margin: 0;
+    padding: 0 20px;
+    font-size: clamp(14px, 1.2vw, 22px);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #f5b301;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
     animation: fade-up 0.5s cubic-bezier(.56,.36,.77,.55);
      transform-origin: bottom;
     position: relative;
+}
+
+#home p::before {
+    content: "";
+    display: block;
+    width: 44px;
+    height: 3px;
+    margin: 0 auto 16px;
+    border-radius: 999px;
+    background-color: #f5b301;
 }
 
 @keyframes fade-up {
@@ -248,8 +264,11 @@ header {
     max-width: 100%;
     margin: 0 0 24px;
     padding: 0;
-    color: white;
-    font-size: clamp(14px, 1.5vw, 22px);
+    color: rgba(255, 255, 255, 0.86);
+    font-size: clamp(12px, 1.1vw, 16px);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     line-height: 1.5;
 }
 
@@ -457,6 +476,7 @@ header {
     #check-in-container > p {
         font-size: 14px;
         margin-bottom: 20px;
+        letter-spacing: 0.08em;
     }
 
     #check-in-border {
