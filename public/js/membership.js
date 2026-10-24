@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    const today = localDateString(new Date());
     let lastFocused = null;
 
     function resetDates() {
@@ -71,11 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function openModal(plan) {
         if (!allowedPlans.includes(plan)) {
             message.textContent = "Invalid membership plan.";
+            message.className = "error";
             return;
         }
 
         planInput.value = plan;
         planDisplay.value = planDetails[plan];
+
         message.textContent = "";
         message.className = "";
 
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resetDates();
 
         lastFocused = document.activeElement;
+
         modal.hidden = false;
         document.body.classList.add("modal-open");
 
@@ -105,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const DB_NAME = "GymTrackOffline";
     const STORE_NAME = "pendingMemberships";
+
     let databasePromise = null;
 
     function openOfflineDB() {
@@ -131,7 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             request.onsuccess = () => {
-                resolve(request.result);
+                const db = request.result;
+
+                db.onversionchange = () => {
+                    db.close();
+                    databasePromise = null;
+                };
+
+                resolve(db);
             };
 
             request.onerror = () => {
@@ -142,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Offline database upgrade is blocked.");
             };
         }).catch(error => {
-            
             databasePromise = null;
             throw error;
         });
@@ -168,9 +177,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             transaction.onabort = () => {
-                reject(transaction.error || new Error(
-                    "Could not save membership offline."
-                ));
+                reject(
+                    transaction.error ||
+                    new Error("Could not save membership offline.")
+                );
             };
         });
     }
@@ -188,10 +198,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 .objectStore(STORE_NAME)
                 .getAll();
 
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => {
+                resolve(request.result);
+            };
 
             request.onerror = () => {
                 reject(request.error);
+            };
+
+            transaction.onabort = () => {
+                reject(
+                    transaction.error ||
+                    new Error("Could not read offline memberships.")
+                );
             };
         });
     }
@@ -214,9 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             transaction.onabort = () => {
-                reject(transaction.error || new Error(
-                    "Could not update offline storage."
-                ));
+                reject(
+                    transaction.error ||
+                    new Error("Could not update offline storage.")
+                );
             };
         });
     }
@@ -227,7 +247,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return `membership-${Date.now()}-${Math.random()
-            .toString(36).slice(2)}`;
+            .toString(36)
+            .slice(2)}`;
     }
 
     async function updatePendingCount() {
@@ -236,13 +257,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!status) return;
 
         try {
-            const pending = await getPendingMemberships();
+            const memberships = await getPendingMemberships();
+
+            const pendingCount = memberships.filter(
+                membership =>
+                    membership.syncStatus === "pending" ||
+                    !membership.syncStatus
+            ).length;
 
             status.textContent = navigator.onLine
-                ? `Online · ${pending.length} pending membership(s)`
-                : `Offline · ${pending.length} pending membership(s)`;
+                ? `Online · ${pendingCount} pending membership(s)`
+                : `Offline · ${pendingCount} pending membership(s)`;
         } catch (error) {
-            console.error("Could not read pending memberships:", error);
+            console.error(
+                "Could not read pending memberships:",
+                error
+            );
 
             status.textContent = navigator.onLine
                 ? "Online · Offline storage unavailable"
@@ -250,72 +280,183 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getClientId() {
+        let clientId = localStorage.getItem("gymtrack_client_id");
+
+        if (!clientId) {
+            clientId = window.crypto?.randomUUID
+                ? window.crypto.randomUUID()
+                : Array.from(
+                    { length: 32 },
+                    () => Math.floor(Math.random() * 16).toString(16)
+                ).join("");
+
+            localStorage.setItem("gymtrack_client_id", clientId);
+        }
+
+        return clientId;
+    }
+
+    function getClientName() {
+        return (
+            localStorage.getItem("gymtrack_client_name") ||
+            "Unnamed Client"
+        );
+    }
+
+async function reportPendingMemberships() {
+    if (!navigator.onLine) {
+        console.log("Offline: queue report will be sent when connection returns.");
+        return;
+    }
+
+    const clientId = getClientId();
+    const clientName = getClientName();
+
+    let jsCount = null;
+    let dbCount = null;
+
+    try {
+        const memberships = await getPendingMemberships();
+
+        jsCount = memberships.filter(
+            membership =>
+                membership.syncStatus === "pending" ||
+                !membership.syncStatus
+        ).length;
+    } catch (error) {
+        console.error("Could not count pending memberships:", error);
+        return;
+    }
+
+    if (
+        window.MembershipOffline &&
+        typeof window.MembershipOffline.countPending === "function"
+    ) {
+        try {
+            dbCount = await window.MembershipOffline.countPending();
+        } catch (error) {
+            console.error("Could not count membershipRequests:", error);
+        }
+    }
+
+    try {
+        const response = await fetch(
+            "/backend/report_pending_memberships.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    client_id: clientId,
+                    client_name: clientName,
+                    pending_memberships_js: jsCount,
+                    pending_memberships_db: dbCount
+                })
+            }
+        );
+
+        const responseText = await response.text();
+        let result;
+
+        try {
+            result = JSON.parse(responseText);
+        } catch {
+            throw new Error(
+                `Invalid JSON from reporting endpoint: ${responseText}`
+            );
+        }
+
+        if (!response.ok || result.success !== true) {
+            throw new Error(
+                result.message || `HTTP ${response.status}`
+            );
+        }
+
+        console.log("Membership queue report saved:", {
+            clientId,
+            clientName,
+            jsCount,
+            dbCount
+        });
+    } catch (error) {
+        console.error("Could not report membership queue:", error);
+    }
+}
+
     let isSyncing = false;
 
     async function syncMemberships() {
-    if (!navigator.onLine || isSyncing) return;
+        if (!navigator.onLine || isSyncing) return;
 
-    isSyncing = true;
+        isSyncing = true;
 
-    try {
-        const pending = await getPendingMemberships();
+        try {
+            const pending = await getPendingMemberships();
 
-        for (const membership of pending) {
-            if (!navigator.onLine) break;
+            for (const membership of pending) {
+                if (!navigator.onLine) break;
 
-            if (!membership.offline_id) {
-                console.error(
-                    "Cannot sync membership: missing offline_id.",
-                    membership
-                );
-                continue;
-            }
-
-            try {
-                const result = await api.post(
-                    "create_membership.php",
-                    membership
-                );
-
-                // Only accept an explicit server confirmation.
-                if (
-                    !result ||
-                    result.success !== true ||
-                    !Number.isFinite(Number(result.member_id)) ||
-                    Number(result.member_id) <= 0
-                ) {
-                    throw new Error(
-                        "Server did not confirm the membership was saved."
+                if (!membership.offline_id) {
+                    console.error(
+                        "Cannot sync membership: missing offline_id.",
+                        membership
                     );
+
+                    continue;
                 }
 
-                // Remove the queued record only after confirmed success.
-                await removePendingMembership(membership.offline_id);
+                try {
+                    const result = await api.post(
+                        "create_membership.php",
+                        membership
+                    );
 
-                console.log(
-                    "Membership synchronized:",
-                    membership.offline_id,
-                    "Member ID:",
-                    result.member_id
-                );
-            } catch (error) {
-                console.error(
-                    "Membership sync failed; record remains queued:",
-                    membership.offline_id,
-                    error
-                );
+                    if (
+                        !result ||
+                        result.success !== true ||
+                        !Number.isFinite(Number(result.member_id)) ||
+                        Number(result.member_id) <= 0
+                    ) {
+                        throw new Error(
+                            "Server did not confirm the membership was saved."
+                        );
+                    }
 
-                // Stop here and retry later. Do not discard the record.
-                break;
+                    await removePendingMembership(
+                        membership.offline_id
+                    );
+
+                    console.log(
+                        "Membership synchronized:",
+                        membership.offline_id,
+                        "Member ID:",
+                        result.member_id
+                    );
+                } catch (error) {
+                    console.error(
+                        "Membership sync failed; record remains queued:",
+                        membership.offline_id,
+                        error
+                    );
+
+                    break;
+                }
             }
+        } catch (error) {
+            console.error(
+                "Could not synchronize memberships:",
+                error
+            );
+        } finally {
+            isSyncing = false;
+
+            await updatePendingCount();
+            await reportPendingMemberships();
         }
-    } catch (error) {
-        console.error("Could not synchronize memberships:", error);
-    } finally {
-        isSyncing = false;
-        await updatePendingCount();
     }
-}
 
     document.querySelectorAll(".avail-btn").forEach(button => {
         button.addEventListener("click", () => {
@@ -343,6 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", async event => {
         event.preventDefault();
+
         message.textContent = "";
         message.className = "";
 
@@ -350,6 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!allowedPlans.includes(planInput.value)) {
             message.textContent = "Please select a membership plan.";
+            message.className = "error";
             return;
         }
 
@@ -357,6 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (startDate.value < currentDate) {
             message.textContent = "The start date cannot be in the past.";
+            message.className = "error";
             return;
         }
 
@@ -368,7 +512,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const requestData = {
             ...data,
-            offline_id: createOfflineId()
+            offline_id: createOfflineId(),
+            syncStatus: "pending"
         };
 
         submitButton.disabled = true;
@@ -376,8 +521,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             if (!navigator.onLine) {
-            
                 await saveOfflineMembership(requestData);
+
+                await updatePendingCount();
+                await reportPendingMemberships();
 
                 message.textContent =
                     "Membership saved on this device. It will sync when you're online.";
@@ -404,20 +551,26 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-    
                 const result = await api.post(
                     "create_membership.php",
                     requestData
                 );
 
-                if (result && result.success === false) {
+                if (
+                    !result ||
+                    result.success !== true ||
+                    !Number.isFinite(Number(result.member_id)) ||
+                    Number(result.member_id) <= 0
+                ) {
                     throw new Error(
-                        result.message || "Membership registration failed."
+                        result?.message ||
+                        "The server did not confirm the membership registration."
                     );
                 }
 
                 message.textContent =
-                    result.message || "Membership registered successfully.";
+                    result.message ||
+                    "Membership registered successfully.";
 
                 message.className = "success";
 
@@ -430,12 +583,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 planInput.value = "";
                 resetDates();
 
+                await updatePendingCount();
+                await reportPendingMemberships();
+
                 setTimeout(() => {
                     closeModal();
                     message.textContent = "";
                 }, 2500);
             } catch (error) {
-
                 const networkFailure =
                     !navigator.onLine ||
                     /failed to fetch|networkerror|network request failed|load failed|fetch failed/i
@@ -462,6 +617,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 resetDates();
 
                 await updatePendingCount();
+                await reportPendingMemberships();
 
                 setTimeout(() => {
                     closeModal();
@@ -471,7 +627,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error("Membership registration error:", error);
 
-            message.textContent = error.message ||
+            message.textContent =
+                error.message ||
                 "Could not save membership. Please try again.";
 
             message.className = "error";
@@ -488,9 +645,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    window.addEventListener("online", () => {
-        updatePendingCount();
-        syncMemberships();
+    window.addEventListener("online", async () => {
+        await updatePendingCount();
+        await syncMemberships();
+        await reportPendingMemberships();
     });
 
     window.addEventListener("offline", () => {
@@ -498,16 +656,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
-            updatePendingCount();
-
-            if (navigator.onLine) {
-                syncMemberships();
-            }
+        if (!document.hidden && navigator.onLine) {
+            syncMemberships();
         }
+
+        updatePendingCount();
     });
 
+    resetDates();
     updatePendingCount();
+    reportPendingMemberships();
 
     if (navigator.onLine) {
         syncMemberships();

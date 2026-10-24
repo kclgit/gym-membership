@@ -1,7 +1,7 @@
 
 const DB_NAME = "GymTrackOffline";
 const STORE_NAME = "membershipRequests";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 function openDatabase() {
     return new Promise((resolve, reject) => {

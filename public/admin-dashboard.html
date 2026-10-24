@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#02579B">
+    <title>Membership Queue Dashboard | GymTrack</title>
+    <link rel="stylesheet" href="./styles/admin-dashboard.css">
+    <script src="js/admin-dashboard.js" defer></script>
+</head>
+<body>
+    <main class="dashboard">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">GYMTRACK MONITORING</p>
+                <h1>Membership Queue Dashboard</h1>
+                <p class="subtitle">
+                    View offline membership queues reported by client browsers.
+                </p>
+            </div>
+
+            <button id="refresh-button" type="button">
+                Refresh
+            </button>
+        </header>
+
+        <p id="dashboard-status" role="status" aria-live="polite">
+            Loading reports...
+        </p>
+
+        <section class="summary-grid" aria-label="Queue totals">
+            <article class="summary-card">
+                <p>Pending Memberships</p>
+                <strong id="total-js">—</strong>
+                <span>Reported pending records</span>
+            </article>
+
+            <article class="summary-card">
+                <p>Membership Requests</p>
+                <strong id="total-db">—</strong>
+                <span>Reported pending records</span>
+            </article>
+
+            <article class="summary-card">
+                <p>Reporting Browsers</p>
+                <strong id="client-total">—</strong>
+                <span>Browsers with saved reports</span>
+            </article>
+        </section>
+
+        <section class="reports-section">
+            <h2>Client Reports</h2>
+            <p class="section-description">
+                Reports older than five minutes are marked stale.
+                Stale counts may not reflect the current offline queue.
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Pending Memberships</th>
+                            <th>Membership Requests</th>
+                            <th>Last report</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-body">
+                        <tr>
+                            <td colspan="5">Loading reports...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <p class="dashboard-note">
+            Counts are reported by client browsers. They are not a
+            count of unprocessed records on the server.
+        </p>
+    </main>
+</body>
+</html>

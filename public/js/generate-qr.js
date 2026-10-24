@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     new QRCode(qrContainer, {
-        text: window.location.origin + "/check-in",
+        text: "http://192.168.100.212:8000/public/index.html",
         width: 300,
         height: 300,
         colorDark: "#000000",
